@@ -1,6 +1,8 @@
-import { Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { ObjectsContext } from '../types/context';
 import { SchemaEditModal } from './SchemaEditModal';
+import { ImportSchemasModal } from '../modals/ImportSchemasModal';
+import { exportSchemas } from '../services/SchemaIO';
 import { defaultSchemas } from '../utils/defaults';
 
 /**
@@ -133,6 +135,31 @@ export class ObjectsSettingTab extends PluginSettingTab {
           await this.ctx.saveSettings();
           this.ctx.refreshCommands();
           this.render();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Share schemas')
+      .setDesc('Copy schemas as JSON, or import schemas from another vault.')
+      .addButton((button) =>
+        button.setButtonText('Export to clipboard').onClick(async () => {
+          const schemas = this.ctx.schemas.all();
+          if (schemas.length === 0) {
+            new Notice('No schemas to export.');
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(exportSchemas(schemas));
+            new Notice(`Copied ${schemas.length} schema${schemas.length === 1 ? '' : 's'} to the clipboard.`);
+          } catch (error) {
+            console.error('Objects: failed to copy schemas', error);
+            new Notice('Failed to copy schemas to the clipboard.');
+          }
+        }),
+      )
+      .addButton((button) =>
+        button.setButtonText('Import…').onClick(() => {
+          new ImportSchemasModal(this.ctx, () => this.render()).open();
         }),
       );
   }

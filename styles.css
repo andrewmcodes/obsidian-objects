@@ -20,3 +20,8 @@
   padding-top: var(--size-2-1);
   padding-bottom: var(--size-2-1);
 }
+
+/* Full-width textarea (e.g. the schema import box). */
+.objects-fullwidth {
+  width: 100%;
+}

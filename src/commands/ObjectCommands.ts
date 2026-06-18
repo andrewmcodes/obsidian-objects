@@ -2,6 +2,8 @@ import { Editor, Notice, Plugin } from 'obsidian';
 import { ObjectsContext } from '../types/context';
 import { openCreateFlow } from '../modals/ObjectTypeModal';
 import { CreateObjectModal } from '../modals/CreateObjectModal';
+import { ImportSchemasModal } from '../modals/ImportSchemasModal';
+import { exportSchemas } from '../services/SchemaIO';
 import { openPluginSettings } from '../utils/settings-ui';
 import { PLUGIN_ID } from '../utils/constants';
 
@@ -39,10 +41,38 @@ export function registerStaticCommands(plugin: Plugin, ctx: ObjectsContext): voi
   });
 
   plugin.addCommand({
+    id: 'export-schemas',
+    name: 'Export schemas to clipboard',
+    callback: () => void exportSchemasToClipboard(ctx),
+  });
+
+  plugin.addCommand({
+    id: 'import-schemas',
+    name: 'Import schemas',
+    callback: () => new ImportSchemasModal(ctx, () => {}).open(),
+  });
+
+  plugin.addCommand({
     id: 'open-objects-settings',
     name: 'Open settings',
     callback: () => openPluginSettings(plugin.app, PLUGIN_ID),
   });
+}
+
+/** Copy all schemas as a JSON bundle to the clipboard. */
+async function exportSchemasToClipboard(ctx: ObjectsContext): Promise<void> {
+  const schemas = ctx.schemas.all();
+  if (schemas.length === 0) {
+    new Notice('No schemas to export.');
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(exportSchemas(schemas));
+    new Notice(`Copied ${schemas.length} schema${schemas.length === 1 ? '' : 's'} to the clipboard.`);
+  } catch (error) {
+    console.error('Objects: failed to copy schemas', error);
+    new Notice('Failed to copy schemas to the clipboard.');
+  }
 }
 
 /**
