@@ -4,32 +4,33 @@ import globals from 'globals';
 import { globalIgnores } from 'eslint/config';
 
 export default tseslint.config(
-	globalIgnores([
-		'node_modules',
-		'dist',
-		'esbuild.config.mjs',
-		'version-bump.mjs',
-		'versions.json',
-		'vitest.config.ts',
-		'tests',
-		'main.js',
-		'package.json',
-		'package-lock.json',
-		'tsconfig.json',
-	]),
-	{
-		languageOptions: {
-			globals: {
-				...globals.browser,
-			},
-			parserOptions: {
-				projectService: {
-					allowDefaultProject: ['eslint.config.mts', 'manifest.json'],
-				},
-				tsconfigRootDir: import.meta.dirname,
-				extraFileExtensions: ['.json'],
-			},
-		},
-	},
-	...obsidianmd.configs.recommended,
+  globalIgnores([
+    'node_modules',
+    'dist',
+    'esbuild.config.mjs',
+    'version-bump.mjs',
+    'versions.json',
+    'vitest.config.ts',
+    'commitlint.config.js',
+    'tests',
+    'main.js',
+    'package.json',
+    'package-lock.json',
+    'tsconfig.json',
+  ]),
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['eslint.config.mts', 'manifest.json'],
+        },
+        tsconfigRootDir: import.meta.dirname,
+        extraFileExtensions: ['.json'],
+      },
+    },
+  },
+  ...obsidianmd.configs.recommended,
 );

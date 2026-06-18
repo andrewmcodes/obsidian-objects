@@ -12,5 +12,8 @@ export class TFolder {}
 export class App {}
 
 export function normalizePath(path: string): string {
-	return path.replace(/\\/g, '/').replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
+  return path
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/')
+    .replace(/^\/|\/$/g, '');
 }

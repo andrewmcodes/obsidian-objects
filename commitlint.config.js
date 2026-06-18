@@ -1,3 +1,3 @@
 export default {
-	extends: ['@andrewmcodes/commitlint-config'],
+  extends: ['@andrewmcodes/commitlint-config'],
 };
