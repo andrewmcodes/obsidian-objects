@@ -17,11 +17,12 @@ Define object schemas (Person, Project, Book, Meeting, …), create structured o
 
 ## Features
 
-- **Schema-driven objects** — each object type defines its folder, filename template, properties, and body template.
-- **Creation modal** — pick a type, fill in the fields, and get a note with valid Properties and a populated template.
+- **Schema-driven objects** — each object type defines its folder, filename template, properties, body templates, and validation rules.
+- **Creation modal** — pick a type, fill in fields (with autocomplete and validation), choose a template, and get a note with valid Properties.
 - **Dynamic commands** — every schema gets a `Create <Schema>` command, plus a generic **Create object** picker.
 - **Promote selection** — turn selected text into an object and replace it with a `[[wikilink]]`.
-- **Native Bases** — the **Generate Bases** command writes `.base` files that filter on the `type` property. No custom views, just native Bases.
+- **Native Bases** — the **Generate Bases** command writes `.base` files (table and card views) that filter on the `type` property and are rendered natively by Obsidian — no custom view code.
+- **Dashboard** — a sidebar view lists every object grouped by type for quick browsing.
 - **Local-first** — no external services, no proprietary storage. Required `type` and `created_on` properties are added automatically.
 
 ## Property types
@@ -34,7 +35,6 @@ Define object schemas (Person, Project, Book, Meeting, …), create structured o
 - **Multiple templates** — schemas can define named body templates to choose from when creating an object.
 - **Validation rules** — properties support regex patterns, number min/max, and email/url format checks, enforced in the creation modal.
 - **Object actions** — schemas can define custom commands for their notes (set a property, append a template section, or create a linked object).
-- **Dashboard** — a sidebar view (ribbon icon or **Open dashboard** command) lists every object grouped by type.
 - **Schema sharing** — export schemas to JSON and import them in another vault.
 
 ## Getting started
@@ -116,7 +116,7 @@ Then in Obsidian: enable **Settings → Community plugins** (turn off Restricted
 
   Otherwise run `mise run install-plugin` and reload Obsidian after each build.
 
-See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/`](docs/conventions/) for the full contributor guide and conventions.
+See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the full contributor guide and conventions.
 
 ## License
 
