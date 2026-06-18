@@ -260,6 +260,15 @@ this.registerInterval(
 - Settings not persisting: ensure `loadData`/`saveData` are awaited and you re-render the UI after changes.
 - Mobile-only issues: confirm you're not using desktop-only APIs; check `isDesktopOnly` and adjust.
 
+## Commits
+
+Use conventional commits format for clear commit history. Examples:
+
+- `feat: add new command to do the thing`
+- `fix: correct settings persistence logic`
+- `docs: update README with new instructions`
+- `refactor: split main.ts into multiple modules`
+
 ## References
 
 - Obsidian sample plugin: https://github.com/obsidianmd/obsidian-sample-plugin
