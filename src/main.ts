@@ -8,6 +8,7 @@ import { BasesService } from './services/BasesService';
 import { ObjectActionService } from './services/ObjectActionService';
 import { ObjectsSettingTab } from './settings/ObjectsSettingTab';
 import { registerSchemaCommands, registerStaticCommands } from './commands/ObjectCommands';
+import { OBJECTS_DASHBOARD_VIEW, ObjectsDashboardView } from './views/ObjectsDashboardView';
 
 /**
  * Obsidian Objects — schema-driven, object-based note-taking on top of native
@@ -35,7 +36,25 @@ export default class ObjectsPlugin extends Plugin implements ObjectsContext {
     registerStaticCommands(this, this);
     this.refreshCommands();
 
+    this.registerView(OBJECTS_DASHBOARD_VIEW, (leaf) => new ObjectsDashboardView(leaf, this));
+    this.addRibbonIcon('boxes', 'Open objects dashboard', () => void this.activateDashboard());
+    this.addCommand({
+      id: 'open-objects-dashboard',
+      name: 'Open dashboard',
+      callback: () => void this.activateDashboard(),
+    });
+
     this.addSettingTab(new ObjectsSettingTab(this, this));
+  }
+
+  /** Reveal the dashboard view in the right sidebar, creating it if needed. */
+  private async activateDashboard(): Promise<void> {
+    const { workspace } = this.app;
+    const existing = workspace.getLeavesOfType(OBJECTS_DASHBOARD_VIEW);
+    const leaf = existing[0] ?? workspace.getRightLeaf(false);
+    if (!leaf) return;
+    await leaf.setViewState({ type: OBJECTS_DASHBOARD_VIEW, active: true });
+    await workspace.revealLeaf(leaf);
   }
 
   onunload(): void {
