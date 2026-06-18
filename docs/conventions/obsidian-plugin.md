@@ -21,6 +21,7 @@ Detailed Obsidian-specific guidance for this plugin. The high-level summary live
 - Conventional Commits on `main` drive a "release PR" that bumps `version` in `package.json` and `manifest.json` (SemVer) and updates `CHANGELOG.md`. Merging that PR creates the GitHub release and a tag with no leading `v`, then the workflow builds and attaches `main.js`, `manifest.json`, and `styles.css`.
 - `versions.json` (plugin version → minimum app version) is **not** auto-updated — bump it manually when you raise `minAppVersion`.
 - One-time repo setup: enable **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** so release-please can open its PR.
+- Full process: [`docs/releasing.md`](../releasing.md).
 
 ## Security, privacy, and compliance
 
