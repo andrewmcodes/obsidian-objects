@@ -10,7 +10,7 @@ description = "Install dependencies with pnpm (via Corepack)"
 run = "corepack pnpm install"
 
 [tasks.dev]
-description = "Build in watch mode for local development"
+description = "Watch build. Set OBSIDIAN_VAULT to build into a vault for hot reload."
 run = "corepack pnpm run dev"
 
 [tasks.build]
