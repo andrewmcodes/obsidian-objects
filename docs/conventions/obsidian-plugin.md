@@ -17,9 +17,10 @@ Detailed Obsidian-specific guidance for this plugin. The high-level summary live
 
 ## Versioning & releases
 
-- Bump `version` in `manifest.json` (SemVer) and update `versions.json` to map plugin version → minimum app version.
-- Create a GitHub release whose tag exactly matches `manifest.json`'s `version` (no leading `v`).
-- Attach `manifest.json`, `main.js`, and `styles.css` (if present) as individual assets. The release workflow handles this on tag push.
+- Releases are automated with [release-please](https://github.com/googleapis/release-please) (`.github/workflows/release.yml`, `release-please-config.json`, `.release-please-manifest.json`).
+- Conventional Commits on `main` drive a "release PR" that bumps `version` in `package.json` and `manifest.json` (SemVer) and updates `CHANGELOG.md`. Merging that PR creates the GitHub release and a tag with no leading `v`, then the workflow builds and attaches `main.js`, `manifest.json`, and `styles.css`.
+- `versions.json` (plugin version → minimum app version) is **not** auto-updated — bump it manually when you raise `minAppVersion`.
+- One-time repo setup: enable **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** so release-please can open its PR.
 
 ## Security, privacy, and compliance
 

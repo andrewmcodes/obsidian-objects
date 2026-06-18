@@ -83,7 +83,7 @@ mise run hooks     # install the commit-msg git hook
 Requires **Obsidian 1.13+**. To install into a local vault, build and copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`, then enable **Objects** in **Settings → Community plugins**. Convenience task:
 
 ```bash
-OBSIDIAN_VAULT="/path/to/your/vault" mise run install-plugin
+OBSIDIAN_VAULT="~/git/andrewmcodes/digital-brain" mise run install-plugin
 ```
 
 ### Testing locally

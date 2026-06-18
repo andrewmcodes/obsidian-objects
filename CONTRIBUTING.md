@@ -51,5 +51,6 @@ Unit tests live beside the code as `src/**/*.test.ts` and run on [Vitest](https:
 
 ## Releasing
 
-1. Update `version` in `manifest.json` and map it in `versions.json` (`pnpm version` automates this via `version-bump.mjs`).
-2. Push a tag matching the version exactly (no leading `v`). The release workflow builds and attaches `main.js`, `manifest.json`, and `styles.css`.
+Releases are automated with [release-please](https://github.com/googleapis/release-please). Conventional Commits on `main` keep a "release PR" open that bumps `package.json` + `manifest.json` and updates `CHANGELOG.md`. Merge that PR to cut a release: it tags the version (no leading `v`) and the workflow builds and attaches `main.js`, `manifest.json`, and `styles.css`.
+
+Note: `versions.json` (plugin version → minAppVersion) is maintained manually — update it when you raise `minAppVersion`.
