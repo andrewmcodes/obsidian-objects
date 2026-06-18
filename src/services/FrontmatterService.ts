@@ -1,4 +1,5 @@
 import { PropertyDefinition, PropertyType } from '../types/schema';
+import { toWikiLink, toWikiLinks } from '../utils/links';
 
 // Builds YAML frontmatter from object property values. Pure logic with no
 // Obsidian dependency so it is fully unit-testable. Output is standard YAML
@@ -58,6 +59,16 @@ export function serializeValue(type: PropertyType, value: PropertyValue): string
       if (cleaned.length === 0) return '[]';
       return '\n' + cleaned.map((item) => `  - ${serializeScalar(item)}`).join('\n');
     }
+    case 'multilink': {
+      const links = toWikiLinks(value as string | string[]);
+      if (links.length === 0) return '[]';
+      // Wikilinks always contain `[` so they are quoted to stay valid YAML.
+      return '\n' + links.map((link) => `  - ${quote(link)}`).join('\n');
+    }
+    case 'link': {
+      const link = toWikiLink(String(value));
+      return link === '' ? '' : quote(link);
+    }
     case 'date':
       // Date strings (e.g. `2026-06-17`) are emitted bare so Obsidian
       // treats them as native date properties rather than text.
@@ -65,6 +76,8 @@ export function serializeValue(type: PropertyType, value: PropertyValue): string
     case 'select':
     case 'text':
     case 'textarea':
+    case 'email':
+    case 'url':
     default:
       return serializeScalar(String(value));
   }

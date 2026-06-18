@@ -26,6 +26,24 @@ describe('serializeValue', () => {
     expect(serializeValue('multiselect', 'a, b')).toBe('\n  - a\n  - b');
     expect(serializeValue('multiselect', [])).toBe('[]');
   });
+
+  it('serializes link values as quoted wikilinks', () => {
+    expect(serializeValue('link', 'Chris Oliver')).toBe('"[[Chris Oliver]]"');
+    expect(serializeValue('link', '[[Acme Inc]]')).toBe('"[[Acme Inc]]"');
+    expect(serializeValue('link', '')).toBe('');
+  });
+
+  it('serializes multilink as a list of quoted wikilinks', () => {
+    expect(serializeValue('multilink', 'Chris Oliver, Ada Lovelace')).toBe(
+      '\n  - "[[Chris Oliver]]"\n  - "[[Ada Lovelace]]"',
+    );
+    expect(serializeValue('multilink', [])).toBe('[]');
+  });
+
+  it('serializes email and url as scalars', () => {
+    expect(serializeValue('email', 'a@b.com')).toBe('"a@b.com"');
+    expect(serializeValue('url', 'https://x.dev')).toBe('"https://x.dev"');
+  });
 });
 
 describe('buildFrontmatter', () => {

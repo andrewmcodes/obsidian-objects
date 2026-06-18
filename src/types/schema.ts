@@ -3,7 +3,19 @@
 // body looks like. Schemas are plain data and contain no Obsidian API
 // references so they can be serialized to plugin settings verbatim.
 
-export const PROPERTY_TYPES = ['text', 'textarea', 'number', 'date', 'checkbox', 'select', 'multiselect'] as const;
+export const PROPERTY_TYPES = [
+  'text',
+  'textarea',
+  'number',
+  'date',
+  'checkbox',
+  'select',
+  'multiselect',
+  'link',
+  'multilink',
+  'email',
+  'url',
+] as const;
 
 export type PropertyType = (typeof PROPERTY_TYPES)[number];
 

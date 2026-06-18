@@ -98,6 +98,30 @@ export class CreateObjectModal extends Modal {
       case 'multiselect':
         this.renderMultiselect(setting, prop);
         break;
+      case 'email':
+        setting.addText((c) => {
+          c.inputEl.type = 'email';
+          c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
+        });
+        break;
+      case 'url':
+        setting.addText((c) => {
+          c.inputEl.type = 'url';
+          c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
+        });
+        break;
+      case 'link':
+        setting.setDesc('Note name or [[wikilink]].');
+        setting.addText((c) => c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v)));
+        break;
+      case 'multilink':
+        setting.setDesc('Comma-separated note names or [[wikilinks]].');
+        setting.addText((c) =>
+          c
+            .setValue(Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]).join(', ') : '')
+            .onChange((v) => set(v.split(',').map((item) => item.trim()))),
+        );
+        break;
       case 'text':
       default:
         setting.addText((c) => c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v)));

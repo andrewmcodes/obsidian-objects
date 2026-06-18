@@ -2,7 +2,7 @@ import { Schema } from '../types/schema';
 import { ObjectsSettings } from '../types/settings';
 
 // Default schemas seeded on first install. Users may freely modify or delete
-// them. They intentionally only use property types supported in v1.
+// them.
 export function defaultSchemas(): Schema[] {
   return [
     {
@@ -11,8 +11,9 @@ export function defaultSchemas(): Schema[] {
       folder: 'Objects/People',
       filenameTemplate: '{{title}}',
       properties: [
-        { key: 'email', label: 'Email', type: 'text' },
-        { key: 'company', label: 'Company', type: 'text' },
+        { key: 'email', label: 'Email', type: 'email' },
+        { key: 'website', label: 'Website', type: 'url' },
+        { key: 'company', label: 'Company', type: 'link' },
       ],
       bodyTemplate: '# {{title}}\n\n## Notes\n',
     },
@@ -43,7 +44,10 @@ export function defaultSchemas(): Schema[] {
       label: 'Meeting',
       folder: 'Objects/Meetings',
       filenameTemplate: '{{date}} {{title}}',
-      properties: [{ key: 'date', label: 'Date', type: 'date' }],
+      properties: [
+        { key: 'date', label: 'Date', type: 'date' },
+        { key: 'attendees', label: 'Attendees', type: 'multilink' },
+      ],
       bodyTemplate: '# {{title}}\n\n## Attendees\n\n## Notes\n\n## Actions\n',
     },
     {
