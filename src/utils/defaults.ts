@@ -50,7 +50,7 @@ export function defaultSchemas(): Schema[] {
       filenameTemplate: '{{date}} {{title}}',
       properties: [
         { key: 'date', label: 'Date', type: 'date' },
-        { key: 'attendees', label: 'Attendees', type: 'multilink' },
+        { key: 'attendees', label: 'Attendees', type: 'multilink', linkType: 'person' },
       ],
       bodyTemplate: '# {{title}}\n\n## Attendees\n\n## Notes\n\n## Actions\n',
     },

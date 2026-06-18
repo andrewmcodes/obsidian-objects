@@ -137,14 +137,14 @@ export class CreateObjectModal extends Modal {
       case 'link':
         setting.setDesc('Note name or [[wikilink]].');
         setting.addText((c) => {
-          new NoteSuggest(this.app, c.inputEl, false);
+          new NoteSuggest(this.app, c.inputEl, false, prop.linkType);
           c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
         });
         break;
       case 'multilink':
         setting.setDesc('Comma-separated note names or [[wikilinks]].');
         setting.addText((c) => {
-          new NoteSuggest(this.app, c.inputEl, true);
+          new NoteSuggest(this.app, c.inputEl, true, prop.linkType);
           c.setValue(
             Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]).join(', ') : '',
           ).onChange((v) => set(v.split(',').map((item) => item.trim())));

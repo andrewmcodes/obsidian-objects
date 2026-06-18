@@ -267,6 +267,18 @@ export class SchemaEditModal extends Modal {
             .onChange((value) => (prop.pattern = value.trim() === '' ? undefined : value)),
         );
     }
+
+    // Link target: scope autocomplete to a specific object type.
+    if (prop.type === 'link' || prop.type === 'multilink') {
+      new Setting(container)
+        .setName('Linked type')
+        .setDesc('Optionally limit suggestions to notes of this type.')
+        .addDropdown((drop) => {
+          drop.addOption('', 'Any type');
+          for (const schema of this.ctx.schemas.all()) drop.addOption(schema.id, schema.label);
+          drop.setValue(prop.linkType ?? '').onChange((value) => (prop.linkType = value || undefined));
+        });
+    }
     setting.settingEl.addClass('objects-property-setting');
   }
 

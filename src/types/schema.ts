@@ -37,6 +37,11 @@ export interface PropertyDefinition {
   min?: number;
   /** Maximum value for `number` properties. */
   max?: number;
+  /**
+   * For `link` / `multilink`: restrict autocomplete to notes whose `type`
+   * matches this schema id. Empty/undefined means any note.
+   */
+  linkType?: string;
 }
 
 /** A named body template. Schemas may define several to choose between. */

@@ -19,7 +19,7 @@ Define object schemas (Person, Project, Book, Meeting, …), create structured o
 
 ## Beyond the basics
 
-- **Relationships** — `link`/`multilink` properties store `[[wikilinks]]`.
+- **Relationships** — `link`/`multilink` properties store `[[wikilinks]]`, with note autocomplete that can be scoped to a specific object type (e.g. a meeting's attendees only suggest people).
 - **Multiple templates** — schemas can define named body templates to choose from when creating an object.
 - **Validation rules** — properties support regex patterns, number min/max, and email/url format checks, enforced in the creation modal.
 - **Object actions** — schemas can define custom commands for their notes (set a property, append a template section, or create a linked object).

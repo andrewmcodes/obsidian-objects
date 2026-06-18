@@ -4,13 +4,15 @@ import { AbstractInputSuggest, App, TFile } from 'obsidian';
  * Autocomplete for note names, attached to a text `<input>`. Used by `link` and
  * `multilink` property fields. In `multi` mode it operates on the comma-
  * separated token currently being typed and appends a separator after a pick,
- * so several notes can be added in sequence.
+ * so several notes can be added in sequence. When `typeFilter` is set, only
+ * notes whose `type` property matches are suggested.
  */
 export class NoteSuggest extends AbstractInputSuggest<TFile> {
   constructor(
     app: App,
     private readonly textInputEl: HTMLInputElement,
     private readonly multi = false,
+    private readonly typeFilter?: string,
   ) {
     super(app, textInputEl);
   }
@@ -21,9 +23,16 @@ export class NoteSuggest extends AbstractInputSuggest<TFile> {
     return raw.trim().toLowerCase();
   }
 
+  /** Whether a note's `type` property satisfies the optional type filter. */
+  private matchesType(file: TFile): boolean {
+    if (!this.typeFilter) return true;
+    const type: unknown = this.app.metadataCache.getFileCache(file)?.frontmatter?.type;
+    return type === this.typeFilter;
+  }
+
   protected getSuggestions(query: string): TFile[] {
     const token = this.token(query);
-    const files = this.app.vault.getMarkdownFiles();
+    const files = this.app.vault.getMarkdownFiles().filter((f) => this.matchesType(f));
     const matches =
       token === ''
         ? files
