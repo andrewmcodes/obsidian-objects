@@ -1,8 +1,6 @@
 # Obsidian Objects — agent guide
 
-Schema-driven, object-based note-taking for Obsidian built on native Markdown,
-Properties, and Bases. This file is the concise operating guide; detailed specs
-live in [`docs/conventions/`](docs/conventions/).
+Schema-driven, object-based note-taking for Obsidian built on native Markdown, Properties, and Bases. This file is the concise operating guide; detailed specs live in [`docs/conventions/`](docs/conventions/).
 
 ## Project overview
 
@@ -14,8 +12,7 @@ live in [`docs/conventions/`](docs/conventions/).
 ## Environment & tooling
 
 - Task runner: [`mise`](https://mise.jdx.dev/) — see `mise.toml`.
-- Package manager: **pnpm via Corepack** (pinned by `packageManager` in
-  `package.json`). Run pnpm as `corepack pnpm …` or after `corepack enable`.
+- Package manager: **pnpm via Corepack** (pinned by `packageManager` in `package.json`). Run pnpm as `corepack pnpm …` or after `corepack enable`.
 - Node: pinned by `mise.toml` (`[tools]`).
 
 Common tasks (`mise run <task>`):
@@ -37,37 +34,27 @@ Common tasks (`mise run <task>`):
 Source lives in `src/`; keep `main.ts` minimal (lifecycle only) and delegate to:
 
 - `types/` — plain data types (no `obsidian` imports).
-- `services/` — domain logic, pure where possible so it unit-tests without
-  Obsidian; vault/UI access isolated to clearly named methods.
+- `services/` — domain logic, pure where possible so it unit-tests without Obsidian; vault/UI access isolated to clearly named methods.
 - `modals/` — `Modal` subclasses (UI).
 - `settings/` — settings tab and schema editor.
 - `views/` — `ItemView` subclasses (e.g. the objects dashboard).
 - `commands/` — command registration.
 - `utils/` — small pure helpers (dates, filenames, defaults, constants).
 
-Pure logic must not import from `obsidian` so tests run in plain Node. Split any
-file that grows past ~200–300 lines.
+Pure logic must not import from `obsidian` so tests run in plain Node. Split any file that grows past ~200–300 lines.
 
 ## Conventions
 
-See [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the
-full set. Highlights:
+See [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the full set. Highlights:
 
-- **Comments**: document symbols with [TSDoc](https://tsdoc.org/) `/** … */`
-  (`@param`, `@returns`). Inline `//` only for non-obvious logic.
-- **Commits**: [Conventional Commits](https://www.conventionalcommits.org/),
-  validated by `@andrewmcodes/commitlint-config` via the `commit-msg` hook.
-- **Formatting**: Prettier (`@andrewmcodes/prettier-config`); 2-space indent per
-  `.editorconfig`. **Do not commit build artifacts** (`main.js`, `node_modules`).
+- **Comments**: document symbols with [TSDoc](https://tsdoc.org/) `/** … */` (`@param`, `@returns`). Inline `//` only for non-obvious logic.
+- **Commits**: [Conventional Commits](https://www.conventionalcommits.org/), validated by `@andrewmcodes/commitlint-config` via the `commit-msg` hook.
+- **Formatting**: Prettier (`@andrewmcodes/prettier-config`); 2-space indent per `.editorconfig`. **Do not commit build artifacts** (`main.js`, `node_modules`).
 - **TypeScript**: `strict` mode; prefer `async/await`.
 
-Obsidian-specific rules (manifest, releases, security, performance, mobile, UX
-copy, troubleshooting) live in
-[`docs/conventions/obsidian-plugin.md`](docs/conventions/obsidian-plugin.md).
+Obsidian-specific rules (manifest, releases, security, performance, mobile, UX copy, troubleshooting) live in [`docs/conventions/obsidian-plugin.md`](docs/conventions/obsidian-plugin.md).
 
-**Keep the docs in sync:** when you change or establish a convention, update the
-relevant file in [`docs/conventions/`](docs/conventions/) (and the index table
-in `CONVENTIONS.md`) in the same change.
+**Keep the docs in sync:** when you change or establish a convention, update the relevant file in [`docs/conventions/`](docs/conventions/) (and the index table in `CONVENTIONS.md`) in the same change.
 
 ## Agent do / don't
 

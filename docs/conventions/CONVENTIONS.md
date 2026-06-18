@@ -1,8 +1,6 @@
 # Conventions
 
-Living record of the conventions used in this repository, organized by topic.
-These mirror the operational rules in [`AGENTS.md`](../../AGENTS.md). Add to them
-as new conventions are established.
+Living record of the conventions used in this repository, organized by topic. These mirror the operational rules in [`AGENTS.md`](../../AGENTS.md). Add to them as new conventions are established.
 
 | Topic                                   | Covers                                                     |
 | --------------------------------------- | ---------------------------------------------------------- |
