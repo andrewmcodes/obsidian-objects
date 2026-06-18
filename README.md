@@ -1,17 +1,29 @@
 # Obsidian Objects
 
-Schema-driven, object-based note-taking for [Obsidian](https://obsidian.md), built entirely on native Markdown, Properties, and Bases.
+<p align="center">
+  <img src="assets/social-image.png" alt="Obsidian Objects" width="100%">
+</p>
 
-Define object schemas (Person, Project, Book, Meeting, …), create structured object notes through a modal, and browse them with native Bases. Everything is stored in plain Markdown with Properties — if you disable or uninstall the plugin, all your data remains fully accessible.
+<p align="center">
+  <a href="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml"><img src="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/andrewmcodes/obsidian-objects/releases/latest"><img src="https://img.shields.io/github/v/release/andrewmcodes/obsidian-objects?sort=semver&display_name=tag" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/minAppVersion-1.13.0-7c3aed" alt="Minimum Obsidian version 1.13.0">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+</p>
+
+Schema-driven, object-based note-taking for [Obsidian](https://obsidian.md), built on native Markdown, Properties, and Bases.
+
+Define object types like Person, Project, or Meeting, create structured notes through a modal, and browse them with native Bases. Everything lives in plain Markdown with Properties, so your notes stay fully readable even if you disable or uninstall the plugin.
 
 ## Features
 
-- **Schema-driven objects** — each object type defines its folder, filename template, properties, and body template.
-- **Creation modal** — pick a type, fill in the fields, and get a note with valid Properties and a populated template.
-- **Dynamic commands** — every schema gets a `Create <Schema>` command, plus a generic **Create object** picker.
-- **Promote selection** — turn selected text into an object and replace it with a `[[wikilink]]`.
-- **Native Bases** — the **Generate Bases** command writes `.base` files that filter on the `type` property. No custom views, just native Bases.
-- **Local-first** — no external services, no proprietary storage. Required `type` and `created_on` properties are added automatically.
+- **Schema-driven objects:** each type defines its folder, filename template, properties, body templates, and validation rules.
+- **Creation modal:** pick a type, fill in the fields (with autocomplete and validation), choose a template, and get a note with valid Properties.
+- **Dynamic commands:** every schema gets its own `Create <Schema>` command, plus a generic **Create object** picker.
+- **Promote selection:** turn highlighted text into an object and replace it with a `[[wikilink]]`.
+- **Native Bases:** the **Generate Bases** command writes `.base` files with table and card views that filter on the `type` property. Obsidian renders them, so there's no custom view code.
+- **Dashboard:** a sidebar view lists every object grouped by type for quick browsing.
+- **Local-first:** no external services and no proprietary storage. The required `type` and `created_on` properties are filled in for you.
 
 ## Property types
 
@@ -19,12 +31,11 @@ Define object schemas (Person, Project, Book, Meeting, …), create structured o
 
 ## Beyond the basics
 
-- **Relationships** — `link`/`multilink` properties store `[[wikilinks]]`, with note autocomplete that can be scoped to a specific object type (e.g. a meeting's attendees only suggest people).
-- **Multiple templates** — schemas can define named body templates to choose from when creating an object.
-- **Validation rules** — properties support regex patterns, number min/max, and email/url format checks, enforced in the creation modal.
-- **Object actions** — schemas can define custom commands for their notes (set a property, append a template section, or create a linked object).
-- **Dashboard** — a sidebar view (ribbon icon or **Open dashboard** command) lists every object grouped by type.
-- **Schema sharing** — export schemas to JSON and import them in another vault.
+- **Relationships:** `link` and `multilink` properties store `[[wikilinks]]`, and the note autocomplete can be scoped to one object type (so a meeting's attendees only suggest people).
+- **Multiple templates:** a schema can define several named body templates to pick from when you create an object.
+- **Validation rules:** properties support regex patterns, number min/max, and email/URL format checks, enforced as you create.
+- **Object actions:** a schema can attach custom commands to its notes, such as setting a property, appending a template section, or creating a linked object.
+- **Schema sharing:** export your schemas to JSON and import them into another vault.
 
 ## Getting started
 
@@ -34,13 +45,13 @@ Define object schemas (Person, Project, Book, Meeting, …), create structured o
 
 ## Commands
 
-- **Create object** — open the object type picker, then the creation modal.
-- **Create _&lt;Schema&gt;_** — create an object of a specific type directly.
-- **Promote selection to object** — convert selected text into a new object.
-- **Generate Bases** — write a `.base` file per schema (table + card views).
-- **Open dashboard** — open the objects dashboard in the sidebar.
-- **Export schemas to clipboard** / **Import schemas** — share schemas as JSON.
-- **Open settings** — open the Objects settings tab.
+- **Create object:** open the object type picker, then the creation modal.
+- **Create _&lt;Schema&gt;_:** create an object of a specific type directly.
+- **Promote selection to object:** convert selected text into a new object.
+- **Generate Bases:** write a `.base` file per schema (table + card views).
+- **Open dashboard:** open the objects dashboard in the sidebar.
+- **Export schemas to clipboard** / **Import schemas:** share schemas as JSON.
+- **Open settings:** open the Objects settings tab.
 
 ## Settings
 
@@ -66,7 +77,7 @@ status: active
 ## Notes
 ```
 
-The `type` property is the single source of truth for classification — the plugin never infers type from folders, tags, or file location.
+The `type` property is the single source of truth for classification. The plugin never infers type from folders, tags, or file location.
 
 ## Development
 
@@ -80,13 +91,13 @@ mise run check     # lint + format-check + build + test
 mise run hooks     # install the commit-msg git hook
 ```
 
-Requires **Obsidian 1.13+**. To install into a local vault, build and copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`. Convenience task (quote the path; a leading `~` is expanded by the task):
+Requires **Obsidian 1.13+**. To install into a local vault, copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`. The convenience task below builds and copies them for you (quote the path; a leading `~` is expanded):
 
 ```bash
 OBSIDIAN_VAULT="~/git/andrewmcodes/digital-brain" mise run install-plugin
 ```
 
-Then in Obsidian: enable **Settings → Community plugins** (turn off Restricted mode if prompted), reload the app, and enable **Objects** under **Installed plugins**. A manually-installed plugin shows up there — **not** in the **Browse** catalog, which only lists submitted community plugins.
+Then, in Obsidian, enable **Settings → Community plugins** (turn off Restricted mode if asked), reload the app, and turn on **Objects** under **Installed plugins**. A manually-installed plugin shows up there, not in the **Browse** catalog, which only lists submitted community plugins.
 
 ### Testing locally
 
@@ -97,7 +108,7 @@ Then in Obsidian: enable **Settings → Community plugins** (turn off Restricted
   pnpm test:watch        # watch mode
   ```
 
-- **Manual testing** in a real vault — the UI (modals, dashboard, commands, generated Bases) is exercised by hand in Obsidian. For a live loop, install the [Hot Reload](https://github.com/pjeby/hot-reload) plugin and point the build at your vault so it rebuilds and reloads on every change:
+- **Manual testing** in a real vault. The UI (modals, dashboard, commands, generated Bases) gets exercised by hand in Obsidian. For a live loop, install the [Hot Reload](https://github.com/pjeby/hot-reload) plugin and point the build at your vault so it rebuilds and reloads on every save:
 
   ```bash
   OBSIDIAN_VAULT="/path/to/your/vault" mise run dev
@@ -105,7 +116,7 @@ Then in Obsidian: enable **Settings → Community plugins** (turn off Restricted
 
   Otherwise run `mise run install-plugin` and reload Obsidian after each build.
 
-See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/`](docs/conventions/) for the full contributor guide and conventions.
+See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the full contributor guide and conventions.
 
 ## License
 

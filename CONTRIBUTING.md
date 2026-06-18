@@ -54,3 +54,5 @@ Unit tests live beside the code as `src/**/*.test.ts` and run on [Vitest](https:
 Releases are automated with [release-please](https://github.com/googleapis/release-please). Conventional Commits on `main` keep a "release PR" open that bumps `package.json` + `manifest.json` and updates `CHANGELOG.md`. Merge that PR to cut a release: it tags the version (no leading `v`) and the workflow builds and attaches `main.js`, `manifest.json`, and `styles.css`.
 
 Note: `versions.json` (plugin version → minAppVersion) is maintained manually — update it when you raise `minAppVersion`.
+
+See [`docs/releasing.md`](docs/releasing.md) for the full process.
