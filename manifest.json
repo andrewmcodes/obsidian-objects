@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "1.0.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+  "id": "obsidian-objects",
+  "name": "Objects",
+  "version": "1.0.0",
+  "minAppVersion": "1.13.0",
+  "description": "Schema-driven, object-based note-taking using native Markdown, Properties, and Bases.",
+  "author": "Andrew Mason",
+  "authorUrl": "https://github.com/andrewmcodes/obsidian-objects",
+  "isDesktopOnly": false
 }

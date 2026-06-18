@@ -20,6 +20,11 @@ export class ObjectsSettingTab extends PluginSettingTab {
   }
 
   display(): void {
+    this.render();
+  }
+
+  /** Render (or re-render) the tab contents. */
+  private render(): void {
     const { containerEl } = this;
     containerEl.empty();
 
@@ -77,7 +82,7 @@ export class ObjectsSettingTab extends PluginSettingTab {
               this.ctx.schemas.move(index, index - 1);
               await this.ctx.saveSettings();
               this.ctx.refreshCommands();
-              this.display();
+              this.render();
             }),
         )
         .addExtraButton((button) =>
@@ -89,23 +94,23 @@ export class ObjectsSettingTab extends PluginSettingTab {
               this.ctx.schemas.move(index, index + 1);
               await this.ctx.saveSettings();
               this.ctx.refreshCommands();
-              this.display();
+              this.render();
             }),
         )
         .addButton((button) =>
           button.setButtonText('Edit').onClick(() => {
-            new SchemaEditModal(this.ctx, schema, () => this.display()).open();
+            new SchemaEditModal(this.ctx, schema, () => this.render()).open();
           }),
         )
         .addButton((button) =>
           button
             .setButtonText('Delete')
-            .setWarning()
+            .setDestructive()
             .onClick(async () => {
               this.ctx.schemas.remove(schema.id);
               await this.ctx.saveSettings();
               this.ctx.refreshCommands();
-              this.display();
+              this.render();
             }),
         );
     });
@@ -116,7 +121,7 @@ export class ObjectsSettingTab extends PluginSettingTab {
           .setButtonText('Add schema')
           .setCta()
           .onClick(() => {
-            new SchemaEditModal(this.ctx, null, () => this.display()).open();
+            new SchemaEditModal(this.ctx, null, () => this.render()).open();
           }),
       )
       .addButton((button) =>
@@ -127,7 +132,7 @@ export class ObjectsSettingTab extends PluginSettingTab {
           }
           await this.ctx.saveSettings();
           this.ctx.refreshCommands();
-          this.display();
+          this.render();
         }),
       );
   }
