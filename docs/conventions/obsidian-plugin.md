@@ -60,7 +60,7 @@ Copy `main.js`, `manifest.json`, and `styles.css` (if any) to:
 <Vault>/.obsidian/plugins/<plugin-id>/
 ```
 
-Reload Obsidian and enable the plugin in **Settings → Community plugins**.
+Enable **Settings → Community plugins** (turn off Restricted mode), reload Obsidian, then enable the plugin under **Installed plugins**. Manually-installed plugins appear there, not in the **Browse** catalog (which only lists submitted plugins).
 
 ## Common code patterns
 

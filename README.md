@@ -80,11 +80,13 @@ mise run check     # lint + format-check + build + test
 mise run hooks     # install the commit-msg git hook
 ```
 
-Requires **Obsidian 1.13+**. To install into a local vault, build and copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`, then enable **Objects** in **Settings → Community plugins**. Convenience task:
+Requires **Obsidian 1.13+**. To install into a local vault, build and copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`. Convenience task (quote the path; a leading `~` is expanded by the task):
 
 ```bash
 OBSIDIAN_VAULT="~/git/andrewmcodes/digital-brain" mise run install-plugin
 ```
+
+Then in Obsidian: enable **Settings → Community plugins** (turn off Restricted mode if prompted), reload the app, and enable **Objects** under **Installed plugins**. A manually-installed plugin shows up there — **not** in the **Browse** catalog, which only lists submitted community plugins.
 
 ### Testing locally
 
