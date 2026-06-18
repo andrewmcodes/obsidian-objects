@@ -2,6 +2,7 @@ import { Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { ObjectsContext } from '../types/context';
 import { SchemaEditModal } from './SchemaEditModal';
 import { ImportSchemasModal } from '../modals/ImportSchemasModal';
+import { FolderSuggest } from './FolderSuggest';
 import { exportSchemas } from '../services/SchemaIO';
 import { defaultSchemas } from '../utils/defaults';
 
@@ -35,22 +36,24 @@ export class ObjectsSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Default folder')
       .setDesc('Parent folder used when a schema does not specify its own.')
-      .addText((text) =>
+      .addText((text) => {
+        new FolderSuggest(this.app, text.inputEl);
         text.setValue(this.ctx.settings.defaultFolder).onChange(async (value) => {
           this.ctx.settings.defaultFolder = value.trim();
           await this.ctx.saveSettings();
-        }),
-      );
+        });
+      });
 
     new Setting(containerEl)
       .setName('Bases folder')
       .setDesc('Where the "Generate Bases" command writes `.base` files.')
-      .addText((text) =>
+      .addText((text) => {
+        new FolderSuggest(this.app, text.inputEl);
         text.setValue(this.ctx.settings.basesFolder).onChange(async (value) => {
           this.ctx.settings.basesFolder = value.trim();
           await this.ctx.saveSettings();
-        }),
-      );
+        });
+      });
 
     new Setting(containerEl)
       .setName('Open note after creating')

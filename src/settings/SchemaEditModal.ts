@@ -9,6 +9,7 @@ import {
   Schema,
 } from '../types/schema';
 import { ObjectsContext } from '../types/context';
+import { FolderSuggest } from './FolderSuggest';
 import { slugifyId, validateSchema } from '../services/SchemaService';
 
 /** Deep-clone a schema so edits can be cancelled without side effects. */
@@ -85,12 +86,13 @@ export class SchemaEditModal extends Modal {
     new Setting(contentEl)
       .setName('Folder')
       .setDesc('Where notes are created. Falls back to the default folder if empty.')
-      .addText((text) =>
+      .addText((text) => {
+        new FolderSuggest(this.ctx.app, text.inputEl);
         text
           .setPlaceholder(this.ctx.settings.defaultFolder)
           .setValue(this.draft.folder)
-          .onChange((value) => (this.draft.folder = value.trim())),
-      );
+          .onChange((value) => (this.draft.folder = value.trim()));
+      });
 
     new Setting(contentEl)
       .setName('Filename template')
