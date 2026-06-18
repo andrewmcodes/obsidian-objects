@@ -3,24 +3,24 @@ import { Schema } from '../types/schema';
 import { ObjectsSettings } from '../types/settings';
 
 // Generates native Obsidian Bases (`.base`) files that filter on the `type`
-// property. The plugin deliberately does not implement custom Bases views —
-// these are plain Base definitions Obsidian renders itself.
+// property and expose native table + card views. These are plain Base
+// definitions that Obsidian renders itself; the plugin adds no custom renderer.
 
 /** Build the YAML for a `.base` file that surfaces one schema's objects. */
 export function buildBaseFile(schema: Schema): string {
-  const order = ['file.name', ...schema.properties.map((prop) => prop.key)];
+  // `file.name` is a built-in; user properties are addressed as `note.<key>`.
+  const order = ['file.name', ...schema.properties.map((prop) => `note.${prop.key}`)];
   const orderLines = (indent: string): string[] => order.map((field) => `${indent}- ${field}`);
   const lines = [
     'filters:',
     '  and:',
     `    - 'type == "${schema.id}"'`,
     'views:',
-    // Native table view.
     '  - type: table',
     `    name: ${schema.label}`,
     '    order:',
     ...orderLines('      '),
-    // Native card view (Capacities-style browsing) over the same fields.
+    // A card view as well, for Capacities-style browsing of the same fields.
     '  - type: cards',
     `    name: ${schema.label} cards`,
     '    order:',

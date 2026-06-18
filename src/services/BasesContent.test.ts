@@ -30,6 +30,6 @@ describe('buildBaseFile', () => {
     expect(base).toContain('type: table');
     expect(base).toContain('type: cards');
     expect(base).toContain('- file.name');
-    expect(base).toContain('- email');
+    expect(base).toContain('- note.email');
   });
 });
