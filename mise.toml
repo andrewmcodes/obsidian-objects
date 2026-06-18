@@ -37,6 +37,24 @@ run = "corepack pnpm run test"
 description = "Install git hooks (commit-msg → commitlint)"
 run = "git config core.hooksPath .githooks && chmod +x .githooks/*"
 
+# Build, then copy the release artifacts into a vault's plugin folder.
+# Set OBSIDIAN_VAULT to your vault's absolute path, e.g.
+#   OBSIDIAN_VAULT="$HOME/Notes" mise run install-plugin
+[tasks.install-plugin]
+description = "Build and copy main.js/manifest.json/styles.css into $OBSIDIAN_VAULT"
+depends = ["build"]
+run = """
+if [ -z "$OBSIDIAN_VAULT" ]; then
+  echo "Set OBSIDIAN_VAULT to your vault's absolute path." >&2
+  exit 1
+fi
+dest="$OBSIDIAN_VAULT/.obsidian/plugins/obsidian-objects"
+mkdir -p "$dest"
+cp main.js manifest.json styles.css "$dest/"
+echo "Installed to $dest"
+echo "Now reload Obsidian and enable Objects in Settings → Community plugins."
+"""
+
 [tasks.check]
 description = "Run lint, format check, build, and tests together"
 depends = ["lint", "format-check", "build", "test"]
