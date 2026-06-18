@@ -98,6 +98,26 @@ export function registerSchemaCommands(plugin: Plugin, ctx: ObjectsContext, regi
         return true;
       },
     });
+
+    // Register one command per custom action, shown only on matching notes.
+    for (const action of schema.actions ?? []) {
+      const actionId = `action-${schema.id}-${action.id}`;
+      if (registered.has(actionId)) continue;
+      registered.add(actionId);
+      plugin.addCommand({
+        id: actionId,
+        name: action.name,
+        checkCallback: (checking: boolean) => {
+          const current = ctx.schemas.byId(schema.id);
+          const currentAction = current?.actions?.find((a) => a.id === action.id);
+          const file = currentAction ? ctx.actions.activeFileForSchema(schema.id) : null;
+          if (!current || !currentAction || !file) return false;
+          if (checking) return true;
+          void ctx.actions.run(current, currentAction, file);
+          return true;
+        },
+      });
+    }
   }
 }
 

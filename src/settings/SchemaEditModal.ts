@@ -1,5 +1,13 @@
 import { Modal, Notice, Setting } from 'obsidian';
-import { PROPERTY_TYPES, PropertyDefinition, PropertyType, Schema } from '../types/schema';
+import {
+  ACTION_TYPES,
+  ActionType,
+  ObjectAction,
+  PROPERTY_TYPES,
+  PropertyDefinition,
+  PropertyType,
+  Schema,
+} from '../types/schema';
 import { ObjectsContext } from '../types/context';
 import { slugifyId, validateSchema } from '../services/SchemaService';
 
@@ -9,6 +17,7 @@ function cloneSchema(schema: Schema): Schema {
     ...schema,
     properties: schema.properties.map((prop) => ({ ...prop, options: prop.options ? [...prop.options] : undefined })),
     templates: schema.templates?.map((template) => ({ ...template })),
+    actions: schema.actions?.map((action) => ({ ...action })),
   };
 }
 
@@ -146,6 +155,20 @@ export class SchemaEditModal extends Modal {
       }),
     );
 
+    contentEl.createEl('h3', { text: 'Actions' });
+    contentEl.createEl('p', {
+      text: 'Optional commands available on notes of this type.',
+      cls: 'setting-item-description',
+    });
+    const actions = (this.draft.actions ??= []);
+    actions.forEach((action, index) => this.renderAction(contentEl, action, index));
+    new Setting(contentEl).addButton((button) =>
+      button.setButtonText('Add action').onClick(() => {
+        actions.push({ id: '', name: '', type: 'set-property' });
+        this.render();
+      }),
+    );
+
     new Setting(contentEl)
       .addButton((button) =>
         button
@@ -245,6 +268,67 @@ export class SchemaEditModal extends Modal {
     setting.settingEl.addClass('objects-property-setting');
   }
 
+  /** Render the editor row(s) for one custom action. */
+  private renderAction(container: HTMLElement, action: ObjectAction, index: number): void {
+    new Setting(container)
+      .addText((text) =>
+        text
+          .setPlaceholder('Action name')
+          .setValue(action.name)
+          .onChange((value) => (action.name = value)),
+      )
+      .addDropdown((drop) => {
+        for (const type of ACTION_TYPES) drop.addOption(type, type);
+        drop.setValue(action.type).onChange((value) => {
+          action.type = value as ActionType;
+          this.render();
+        });
+      })
+      .addExtraButton((button) =>
+        button
+          .setIcon('trash')
+          .setTooltip('Remove action')
+          .onClick(() => {
+            this.draft.actions?.splice(index, 1);
+            this.render();
+          }),
+      );
+
+    if (action.type === 'set-property') {
+      new Setting(container)
+        .setName('Set property')
+        .addText((text) =>
+          text
+            .setPlaceholder('Key')
+            .setValue(action.property ?? '')
+            .onChange((value) => (action.property = value.trim())),
+        )
+        .addText((text) =>
+          text
+            .setPlaceholder('Value')
+            .setValue(action.value ?? '')
+            .onChange((value) => (action.value = value)),
+        );
+    } else if (action.type === 'append-template') {
+      new Setting(container)
+        .setName('Append template')
+        .setDesc('Supports {{title}}, {{date}}, {{type}}.')
+        .addTextArea((area) => {
+          area
+            .setPlaceholder('## Follow-up\n')
+            .setValue(action.template ?? '')
+            .onChange((value) => (action.template = value));
+          area.inputEl.rows = 3;
+        });
+    } else if (action.type === 'create-linked') {
+      new Setting(container).setName('Create linked object').addDropdown((drop) => {
+        drop.addOption('', '—');
+        for (const schema of this.ctx.schemas.all()) drop.addOption(schema.id, schema.label);
+        drop.setValue(action.targetSchema ?? '').onChange((value) => (action.targetSchema = value || undefined));
+      });
+    }
+  }
+
   /** Validate and persist the draft via `onSave`. */
   private async save(): Promise<void> {
     this.draft.label = this.draft.label.trim();
@@ -252,6 +336,17 @@ export class SchemaEditModal extends Modal {
     if (this.draft.templates) {
       this.draft.templates = this.draft.templates.filter((t) => t.name.trim() !== '' && t.body.trim() !== '');
       if (this.draft.templates.length === 0) delete this.draft.templates;
+    }
+    // Drop unnamed actions and assign each a stable id derived from its name.
+    if (this.draft.actions) {
+      this.draft.actions = this.draft.actions.filter((a) => a.name.trim() !== '');
+      const usedIds = new Set<string>();
+      for (const action of this.draft.actions) {
+        action.name = action.name.trim();
+        action.id = slugifyId(action.id || action.name, (id) => usedIds.has(id));
+        usedIds.add(action.id);
+      }
+      if (this.draft.actions.length === 0) delete this.draft.actions;
     }
     if (this.isNew && !this.draft.id) {
       this.draft.id = slugifyId(this.draft.label, (id) => this.ctx.schemas.byId(id) !== undefined);

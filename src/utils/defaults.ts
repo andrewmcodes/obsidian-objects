@@ -38,6 +38,10 @@ export function defaultSchemas(): Schema[] {
         },
       ],
       bodyTemplate: '# {{title}}\n\n## Notes\n\n## Related\n',
+      actions: [
+        { id: 'archive', name: 'Archive project', type: 'set-property', property: 'status', value: 'completed' },
+        { id: 'add-follow-up', name: 'Add follow-up', type: 'append-template', template: '## Follow-up — {{date}}\n' },
+      ],
     },
     {
       id: 'meeting',

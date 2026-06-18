@@ -47,6 +47,30 @@ export interface NamedTemplate {
   body: string;
 }
 
+export const ACTION_TYPES = ['set-property', 'append-template', 'create-linked'] as const;
+
+export type ActionType = (typeof ACTION_TYPES)[number];
+
+/**
+ * A custom command available on a note of this object type. Each action becomes
+ * an Obsidian command shown only when the active note's `type` matches.
+ */
+export interface ObjectAction {
+  /** Stable id, unique within the schema. */
+  id: string;
+  /** Command label, e.g. "Archive project". */
+  name: string;
+  type: ActionType;
+  /** `set-property`: the frontmatter key to set. */
+  property?: string;
+  /** `set-property`: the value to assign. */
+  value?: string;
+  /** `append-template`: Markdown appended to the note body. */
+  template?: string;
+  /** `create-linked`: schema id of the object to create. */
+  targetSchema?: string;
+}
+
 export interface Schema {
   /** Stable identifier, also written to the `type` property. */
   id: string;
@@ -62,4 +86,6 @@ export interface Schema {
   bodyTemplate: string;
   /** Optional additional named templates the user can pick when creating. */
   templates?: NamedTemplate[];
+  /** Optional custom actions (commands) available on notes of this type. */
+  actions?: ObjectAction[];
 }

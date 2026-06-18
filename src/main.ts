@@ -5,6 +5,7 @@ import { DEFAULT_SETTINGS, defaultSchemas } from './utils/defaults';
 import { ObjectService } from './services/ObjectService';
 import { SchemaService } from './services/SchemaService';
 import { BasesService } from './services/BasesService';
+import { ObjectActionService } from './services/ObjectActionService';
 import { ObjectsSettingTab } from './settings/ObjectsSettingTab';
 import { registerSchemaCommands, registerStaticCommands } from './commands/ObjectCommands';
 
@@ -18,6 +19,7 @@ export default class ObjectsPlugin extends Plugin implements ObjectsContext {
   objects!: ObjectService;
   schemas!: SchemaService;
   bases!: BasesService;
+  actions!: ObjectActionService;
 
   /** Ids of dynamic schema commands already registered this session. */
   private registeredCommands = new Set<string>();
@@ -28,6 +30,7 @@ export default class ObjectsPlugin extends Plugin implements ObjectsContext {
     this.schemas = new SchemaService(this.settings);
     this.objects = new ObjectService(this.app, this.settings);
     this.bases = new BasesService(this.app, this.settings);
+    this.actions = new ObjectActionService(this.app, this);
 
     registerStaticCommands(this, this);
     this.refreshCommands();
