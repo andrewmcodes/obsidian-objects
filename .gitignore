@@ -1,5 +1,10 @@
-# vscode
-.vscode 
+# vscode — keep shared workspace recommendations, ignore everything else.
+# `!.vscode/` re-includes the directory (your global gitignore excludes it) so
+# the negations below can take effect.
+!.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
 # Intellij
 *.iml
