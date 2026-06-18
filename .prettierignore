@@ -1,0 +1,6 @@
+node_modules
+main.js
+dist
+package-lock.json
+pnpm-lock.yaml
+*.map

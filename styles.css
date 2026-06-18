@@ -1,8 +1,22 @@
-/*
+/* Objects plugin styles. */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/* Multiselect property input: a wrapped list of labelled checkboxes. */
+.objects-multiselect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+}
 
-If your plugin does not need CSS, delete this file.
+.objects-multiselect__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  white-space: nowrap;
+}
 
-*/
+/* Tighten the per-property editor rows in the schema editor. */
+.objects-property-setting {
+  border-top: none;
+  padding-top: var(--size-2-1);
+  padding-bottom: var(--size-2-1);
+}

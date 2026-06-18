@@ -1,114 +1,63 @@
-import {
-	Editor,
-	MarkdownView,
-	MarkdownFileInfo,
-	Modal,
-	Notice,
-	Plugin,
-} from 'obsidian';
-import {
-	DEFAULT_SETTINGS,
-	MyPluginSettings,
-	SampleSettingTab,
-} from './settings';
+import { Plugin } from 'obsidian';
+import { ObjectsSettings } from './types/settings';
+import { ObjectsContext } from './types/context';
+import { DEFAULT_SETTINGS, defaultSchemas } from './utils/defaults';
+import { ObjectService } from './services/ObjectService';
+import { SchemaService } from './services/SchemaService';
+import { BasesService } from './services/BasesService';
+import { ObjectsSettingTab } from './settings/ObjectsSettingTab';
+import { registerSchemaCommands, registerStaticCommands } from './commands/ObjectCommands';
 
-// Remember to rename these classes and interfaces!
+/**
+ * Obsidian Objects — schema-driven, object-based note-taking on top of native
+ * Markdown, Properties, and Bases. `main.ts` is intentionally thin: it owns
+ * lifecycle and wiring; all behavior lives in services, modals, and commands.
+ */
+export default class ObjectsPlugin extends Plugin implements ObjectsContext {
+  settings!: ObjectsSettings;
+  objects!: ObjectService;
+  schemas!: SchemaService;
+  bases!: BasesService;
 
-export default class MyPlugin extends Plugin {
-	settings!: MyPluginSettings;
+  /** Ids of dynamic schema commands already registered this session. */
+  private registeredCommands = new Set<string>();
 
-	async onload() {
-		await this.loadSettings();
+  async onload(): Promise<void> {
+    await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon('dice', 'Sample', (_evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
+    this.schemas = new SchemaService(this.settings);
+    this.objects = new ObjectService(this.app, this.settings);
+    this.bases = new BasesService(this.app, this.settings);
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status bar text');
+    registerStaticCommands(this, this);
+    this.refreshCommands();
 
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-modal-simple',
-			name: 'Open modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			},
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'replace-selected',
-			name: 'Replace selected content',
-			editorCallback: (
-				editor: Editor,
-				_ctx: MarkdownView | MarkdownFileInfo,
-			) => {
-				editor.replaceSelection('Sample editor command');
-			},
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-modal-complex',
-			name: 'Open modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView =
-					this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
+    this.addSettingTab(new ObjectsSettingTab(this, this));
+  }
 
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-				return false;
-			},
-		});
+  onunload(): void {
+    // Commands, settings tab, and any registered events are cleaned up by
+    // Obsidian automatically since they were added via plugin helpers.
+  }
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+  /** Register dynamic `Create <Schema>` commands for any new schemas. */
+  refreshCommands(): void {
+    registerSchemaCommands(this, this, this.registeredCommands);
+  }
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(activeDocument, 'click', (_evt: MouseEvent) => {
-			new Notice('Click');
-		});
+  async loadSettings(): Promise<void> {
+    const loaded = (await this.loadData()) as Partial<ObjectsSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded);
 
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000),
-		);
-	}
+    // Seed default schemas exactly once, on first run.
+    if (!this.settings.hasSeededDefaults && this.settings.schemas.length === 0) {
+      this.settings.schemas = defaultSchemas();
+      this.settings.hasSeededDefaults = true;
+      await this.saveData(this.settings);
+    }
+  }
 
-	onunload() {}
-
-	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			(await this.loadData()) as Partial<MyPluginSettings>,
-		);
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
+  async saveSettings(): Promise<void> {
+    await this.saveData(this.settings);
+  }
 }
