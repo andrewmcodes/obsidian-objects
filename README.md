@@ -1,5 +1,16 @@
 # Obsidian Objects
 
+<p align="center">
+  <img src="assets/social-image.png" alt="Obsidian Objects" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml"><img src="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/andrewmcodes/obsidian-objects/releases/latest"><img src="https://img.shields.io/github/v/release/andrewmcodes/obsidian-objects?sort=semver&display_name=tag" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/minAppVersion-1.13.0-7c3aed" alt="Minimum Obsidian version 1.13.0">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+</p>
+
 Schema-driven, object-based note-taking for [Obsidian](https://obsidian.md), built entirely on native Markdown, Properties, and Bases.
 
 Define object schemas (Person, Project, Book, Meeting, …), create structured object notes through a modal, and browse them with native Bases. Everything is stored in plain Markdown with Properties — if you disable or uninstall the plugin, all your data remains fully accessible.
