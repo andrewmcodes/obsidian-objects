@@ -14,10 +14,10 @@ You never bump versions or create tags by hand — you just merge the release PR
 
 The version is derived from commit types since the last release:
 
-| Commit                              | Bump  |
-| ----------------------------------- | ----- |
-| `fix:`                              | patch |
-| `feat:`                             | minor |
+| Commit                               | Bump  |
+| ------------------------------------ | ----- |
+| `fix:`                               | patch |
+| `feat:`                              | minor |
 | `feat!:` / `BREAKING CHANGE:` footer | major |
 
 release-please writes the new version into `package.json` and `manifest.json` (via `extra-files`), and regenerates `CHANGELOG.md`. `chore:`, `docs:`, `refactor:`, `test:`, `build:`, and `ci:` commits don't trigger a release on their own but are still included in the changelog where applicable.
