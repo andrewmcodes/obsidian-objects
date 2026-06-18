@@ -31,6 +31,12 @@ export interface PropertyDefinition {
   options?: string[];
   /** Default value pre-filled in the modal. */
   default?: string | number | boolean | string[];
+  /** Regex (source) a text/email/url value must fully match. */
+  pattern?: string;
+  /** Minimum value for `number` properties. */
+  min?: number;
+  /** Maximum value for `number` properties. */
+  max?: number;
 }
 
 /** A named body template. Schemas may define several to choose between. */

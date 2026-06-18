@@ -212,6 +212,36 @@ export class SchemaEditModal extends Modal {
             }),
         );
     }
+
+    // Number rules: min / max.
+    if (prop.type === 'number') {
+      new Setting(container)
+        .setName('Range')
+        .setDesc('Optional minimum and maximum.')
+        .addText((text) => {
+          text.inputEl.type = 'number';
+          text.setPlaceholder('Min').setValue(prop.min?.toString() ?? '');
+          text.onChange((value) => (prop.min = value === '' ? undefined : Number(value)));
+        })
+        .addText((text) => {
+          text.inputEl.type = 'number';
+          text.setPlaceholder('Max').setValue(prop.max?.toString() ?? '');
+          text.onChange((value) => (prop.max = value === '' ? undefined : Number(value)));
+        });
+    }
+
+    // Pattern rule applies to free-text-like types.
+    if (['text', 'textarea', 'email', 'url', 'select'].includes(prop.type)) {
+      new Setting(container)
+        .setName('Pattern')
+        .setDesc('Optional regex the value must fully match.')
+        .addText((text) =>
+          text
+            .setPlaceholder('e.g. [A-Z]{2,}')
+            .setValue(prop.pattern ?? '')
+            .onChange((value) => (prop.pattern = value.trim() === '' ? undefined : value)),
+        );
+    }
     setting.settingEl.addClass('objects-property-setting');
   }
 

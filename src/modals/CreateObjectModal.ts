@@ -5,6 +5,7 @@ import { propertyLabel } from '../services/SchemaService';
 import { ObjectValues } from '../services/ObjectService';
 import { PropertyValue } from '../services/FrontmatterService';
 import { templateChoices } from '../services/TemplateService';
+import { validateObjectValues } from '../services/ObjectValidation';
 import { ConflictModal } from './ConflictModal';
 
 /**
@@ -178,9 +179,9 @@ export class CreateObjectModal extends Modal {
       new Notice('A title is required.');
       return;
     }
-    const missing = this.schema.properties.filter((prop) => prop.required && isEmpty(this.values[prop.key]));
-    if (missing.length) {
-      new Notice(`Missing required: ${missing.map(propertyLabel).join(', ')}`);
+    const errors = validateObjectValues(this.schema, this.values);
+    if (errors.length) {
+      new Notice(errors.join('\n'));
       return;
     }
 
@@ -232,12 +233,4 @@ export class CreateObjectModal extends Modal {
   onClose(): void {
     this.contentEl.empty();
   }
-}
-
-/** Whether a property value should count as unset for required-field checks. */
-function isEmpty(value: PropertyValue): boolean {
-  if (value === null || value === undefined) return true;
-  if (typeof value === 'string') return value.trim() === '';
-  if (Array.isArray(value)) return value.length === 0;
-  return false;
 }
