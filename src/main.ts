@@ -16,7 +16,9 @@ import { OBJECTS_DASHBOARD_VIEW, ObjectsDashboardView } from './views/ObjectsDas
  * lifecycle and wiring; all behavior lives in services, modals, and commands.
  */
 export default class ObjectsPlugin extends Plugin implements ObjectsContext {
-  settings!: ObjectsSettings;
+  // `declare` refines the inherited `Plugin.settings` without emitting a field
+  // that would clobber it (required under useDefineForClassFields).
+  declare settings: ObjectsSettings;
   objects!: ObjectService;
   schemas!: SchemaService;
   bases!: BasesService;

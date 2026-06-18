@@ -1,19 +1,23 @@
 {
   "compilerOptions": {
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "target": "ES2022",
     "module": "ESNext",
-    "target": "ES2021",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "moduleResolution": "bundler",
+
     "isolatedModules": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "moduleDetection": "force",
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["ES2021", "DOM"]
+    "forceConsistentCasingInFileNames": true,
+
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["src/**/*.ts"]
 }
