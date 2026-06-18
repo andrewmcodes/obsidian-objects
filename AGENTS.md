@@ -65,6 +65,10 @@ Obsidian-specific rules (manifest, releases, security, performance, mobile, UX
 copy, troubleshooting) live in
 [`docs/conventions/obsidian-plugin.md`](docs/conventions/obsidian-plugin.md).
 
+**Keep the docs in sync:** when you change or establish a convention, update the
+relevant file in [`docs/conventions/`](docs/conventions/) (and the index table
+in `CONVENTIONS.md`) in the same change.
+
 ## Agent do / don't
 
 **Do**

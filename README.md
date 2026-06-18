@@ -110,6 +110,26 @@ Requires **Obsidian 1.13+**. To install into a local vault, build and copy
 OBSIDIAN_VAULT="/path/to/your/vault" mise run install-plugin
 ```
 
+### Testing locally
+
+- **Unit tests** (pure logic) run with [Vitest](https://vitest.dev/):
+
+  ```bash
+  mise run test          # one-off
+  pnpm test:watch        # watch mode
+  ```
+
+- **Manual testing** in a real vault — the UI (modals, dashboard, commands,
+  generated Bases) is exercised by hand in Obsidian. For a live loop, install
+  the [Hot Reload](https://github.com/pjeby/hot-reload) plugin and point the
+  build at your vault so it rebuilds and reloads on every change:
+
+  ```bash
+  OBSIDIAN_VAULT="/path/to/your/vault" mise run dev
+  ```
+
+  Otherwise run `mise run install-plugin` and reload Obsidian after each build.
+
 See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/`](docs/conventions/) for
 the full contributor guide and conventions.
 
