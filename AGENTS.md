@@ -260,6 +260,11 @@ this.registerInterval(
 - Settings not persisting: ensure `loadData`/`saveData` are awaited and you re-render the UI after changes.
 - Mobile-only issues: confirm you're not using desktop-only APIs; check `isDesktopOnly` and adjust.
 
+## Comments
+
+- When documenting symbols (functions, classes, interfaces, properties), use [TSDoc](https://tsdoc.org/) format — `/** ... */` doc comments with TSDoc tags where helpful (`@param`, `@returns`, etc.).
+- Inline `//` comments are fine for explaining non-obvious logic inside function bodies, but should be avoided unless necessary for clarity. Use TSDoc for public API documentation.
+
 ## Commits
 
 Use conventional commits format for clear commit history. Examples:
