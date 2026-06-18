@@ -21,7 +21,7 @@
     "bases",
     "properties"
   ],
-  "license": "0-BSD",
+  "license": "MIT",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"

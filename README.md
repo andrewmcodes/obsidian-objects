@@ -90,4 +90,4 @@ the full contributor guide and conventions.
 
 ## License
 
-[0-BSD](LICENSE)
+[MIT](LICENSE)
