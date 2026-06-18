@@ -38,21 +38,39 @@ description = "Install git hooks (commit-msg → commitlint)"
 run = "git config core.hooksPath .githooks && chmod +x .githooks/*"
 
 # Build, then copy the release artifacts into a vault's plugin folder.
-# Set OBSIDIAN_VAULT to your vault's absolute path, e.g.
+# Set OBSIDIAN_VAULT to your vault path, e.g.
 #   OBSIDIAN_VAULT="$HOME/Notes" mise run install-plugin
+# A leading ~ is expanded. Quote the value so the shell doesn't expand it too
+# early (the task handles ~ itself).
 [tasks.install-plugin]
 description = "Build and copy main.js/manifest.json/styles.css into $OBSIDIAN_VAULT"
 depends = ["build"]
 run = """
 if [ -z "$OBSIDIAN_VAULT" ]; then
-  echo "Set OBSIDIAN_VAULT to your vault's absolute path." >&2
+  echo "Set OBSIDIAN_VAULT to your vault path, e.g. OBSIDIAN_VAULT=\\"$HOME/Notes\\"" >&2
   exit 1
 fi
-dest="$OBSIDIAN_VAULT/.obsidian/plugins/obsidian-objects"
+# Expand a leading ~ (it is not expanded inside quotes by the shell).
+vault="$OBSIDIAN_VAULT"
+case "$vault" in
+  "~") vault="$HOME" ;;
+  "~/"*) vault="$HOME/${vault#~/}" ;;
+esac
+# Refuse anything that isn't an absolute path, so we never create folders inside
+# the repo by accident.
+case "$vault" in
+  /*) ;;
+  *) echo "OBSIDIAN_VAULT must be an absolute path (got: $OBSIDIAN_VAULT)" >&2; exit 1 ;;
+esac
+if [ ! -d "$vault" ]; then
+  echo "Vault folder does not exist: $vault" >&2
+  exit 1
+fi
+dest="$vault/.obsidian/plugins/obsidian-objects"
 mkdir -p "$dest"
 cp main.js manifest.json styles.css "$dest/"
 echo "Installed to $dest"
-echo "Now reload Obsidian and enable Objects in Settings → Community plugins."
+echo "Reload Obsidian, then enable Objects under Settings → Community plugins → Installed plugins."
 """
 
 [tasks.check]
