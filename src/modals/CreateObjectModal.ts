@@ -6,6 +6,7 @@ import { ObjectValues } from '../services/ObjectService';
 import { PropertyValue } from '../services/FrontmatterService';
 import { templateChoices } from '../services/TemplateService';
 import { validateObjectValues } from '../services/ObjectValidation';
+import { NoteSuggest } from '../suggest/NoteSuggest';
 import { ConflictModal } from './ConflictModal';
 
 /**
@@ -135,15 +136,19 @@ export class CreateObjectModal extends Modal {
         break;
       case 'link':
         setting.setDesc('Note name or [[wikilink]].');
-        setting.addText((c) => c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v)));
+        setting.addText((c) => {
+          new NoteSuggest(this.app, c.inputEl, false);
+          c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
+        });
         break;
       case 'multilink':
         setting.setDesc('Comma-separated note names or [[wikilinks]].');
-        setting.addText((c) =>
-          c
-            .setValue(Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]).join(', ') : '')
-            .onChange((v) => set(v.split(',').map((item) => item.trim()))),
-        );
+        setting.addText((c) => {
+          new NoteSuggest(this.app, c.inputEl, true);
+          c.setValue(
+            Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]).join(', ') : '',
+          ).onChange((v) => set(v.split(',').map((item) => item.trim())));
+        });
         break;
       case 'text':
       default:

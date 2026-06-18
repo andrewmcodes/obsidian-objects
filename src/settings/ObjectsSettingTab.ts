@@ -2,7 +2,7 @@ import { Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { ObjectsContext } from '../types/context';
 import { SchemaEditModal } from './SchemaEditModal';
 import { ImportSchemasModal } from '../modals/ImportSchemasModal';
-import { FolderSuggest } from './FolderSuggest';
+import { FolderSuggest } from '../suggest/FolderSuggest';
 import { exportSchemas } from '../services/SchemaIO';
 import { defaultSchemas } from '../utils/defaults';
 

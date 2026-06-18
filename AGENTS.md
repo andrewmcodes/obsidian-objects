@@ -37,6 +37,7 @@ Source lives in `src/`; keep `main.ts` minimal (lifecycle only) and delegate to:
 - `services/` — domain logic, pure where possible so it unit-tests without Obsidian; vault/UI access isolated to clearly named methods.
 - `modals/` — `Modal` subclasses (UI).
 - `settings/` — settings tab and schema editor.
+- `suggest/` — `AbstractInputSuggest` autocompletes (folder, note inputs).
 - `views/` — `ItemView` subclasses (e.g. the objects dashboard).
 - `commands/` — command registration.
 - `utils/` — small pure helpers (dates, filenames, defaults, constants).

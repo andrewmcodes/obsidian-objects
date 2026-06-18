@@ -9,7 +9,7 @@ import {
   Schema,
 } from '../types/schema';
 import { ObjectsContext } from '../types/context';
-import { FolderSuggest } from './FolderSuggest';
+import { FolderSuggest } from '../suggest/FolderSuggest';
 import { slugifyId, validateSchema } from '../services/SchemaService';
 
 /** Deep-clone a schema so edits can be cancelled without side effects. */

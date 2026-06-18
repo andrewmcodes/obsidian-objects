@@ -26,6 +26,12 @@
   width: 100%;
 }
 
+/* Muted folder path subtitle in the note suggester. */
+.objects-suggest__path {
+  font-size: var(--font-smaller);
+  color: var(--text-muted);
+}
+
 /* Objects dashboard view. */
 .objects-dashboard__list {
   margin: 0 0 var(--size-4-3) 0;
