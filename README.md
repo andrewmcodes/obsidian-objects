@@ -15,6 +15,8 @@ Schema-driven, object-based note-taking for [Obsidian](https://obsidian.md), bui
 
 Define object types like Person, Project, or Meeting, create structured notes through a modal, and browse them with native Bases. Everything lives in plain Markdown with Properties, so your notes stay fully readable even if you disable or uninstall the plugin.
 
+📖 **[Documentation site →](https://andrewmcodes.github.io/obsidian-objects/)**
+
 ## Features
 
 - **Schema-driven objects:** each type defines its folder, filename template, properties, body templates, and validation rules.
@@ -116,7 +118,7 @@ Then, in Obsidian, enable **Settings → Community plugins** (turn off Restricte
 
   Otherwise run `mise run install-plugin` and reload Obsidian after each build.
 
-See [`AGENTS.md`](AGENTS.md) and [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the full contributor guide and conventions.
+For an overview, see the [documentation site](https://andrewmcodes.github.io/obsidian-objects/). For the full contributor guide and conventions, see [`AGENTS.md`](AGENTS.md) and [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md).
 
 ## License
 
