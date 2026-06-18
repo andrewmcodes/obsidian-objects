@@ -1,38 +1,42 @@
 [tools]
 node = "24.13.0"
 
+# pnpm is provided through Corepack (bundled with Node). The version is pinned
+# via the "packageManager" field in package.json, so `corepack pnpm ...` always
+# runs the right pnpm without a separate install.
+
 [tasks.install]
-description = "Install npm dependencies"
-run = "npm install"
+description = "Install dependencies with pnpm (via Corepack)"
+run = "corepack pnpm install"
 
 [tasks.dev]
 description = "Build in watch mode for local development"
-run = "npm run dev"
+run = "corepack pnpm run dev"
 
 [tasks.build]
 description = "Type-check and produce a production bundle"
-run = "npm run build"
+run = "corepack pnpm run build"
 
 [tasks.lint]
 description = "Lint the project with ESLint"
-run = "npm run lint"
+run = "corepack pnpm exec eslint ."
 
 [tasks.format]
-description = "Format the project with Prettier"
-run = "prettier --write ."
+description = "Format with Prettier and apply ESLint autofixes"
+run = "corepack pnpm exec eslint . --fix && corepack pnpm exec prettier --write ."
 
 [tasks.format-check]
 description = "Check formatting with Prettier"
-run = "prettier --check ."
+run = "corepack pnpm exec prettier --check ."
+
+[tasks.test]
+description = "Run the test suite once"
+run = "corepack pnpm run test"
 
 [tasks.hooks]
 description = "Install git hooks (commit-msg → commitlint)"
 run = "git config core.hooksPath .githooks && chmod +x .githooks/*"
 
-[tasks.test]
-description = "Run the test suite once"
-run = "npm run test"
-
 [tasks.check]
-description = "Run lint, type-check/build, and tests"
-depends = ["lint", "build", "test"]
+description = "Run lint, format check, build, and tests together"
+depends = ["lint", "format-check", "build", "test"]
