@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Obsidian Objects — schema-driven object notes for Obsidian</title>
+    <meta
+      name="description"
+      content="Schema-driven, object-based note-taking for Obsidian using native Markdown, Properties, and Bases."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>📦</text></svg>"
+    />
+    <style>
+      :root {
+        --bg: #0f1020;
+        --panel: #16172b;
+        --text: #e8e8f0;
+        --muted: #a7a8c0;
+        --accent: #7c3aed;
+        --accent-2: #a855f7;
+        --border: #2a2b45;
+        --code: #1d1e36;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      a {
+        color: var(--accent-2);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      header.hero {
+        text-align: center;
+        padding: 56px 20px 32px;
+        background: radial-gradient(1200px 400px at 50% -10%, rgba(124, 58, 237, 0.25), transparent);
+      }
+      .hero h1 {
+        font-size: 2.6rem;
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .hero p.tagline {
+        font-size: 1.15rem;
+        color: var(--muted);
+        margin: 0 auto 20px;
+        max-width: 640px;
+      }
+      .badges img {
+        height: 20px;
+        margin: 2px;
+        vertical-align: middle;
+      }
+      .banner {
+        width: 100%;
+        max-width: 880px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        margin: 28px auto 0;
+        display: block;
+      }
+      .cta {
+        margin: 24px 0 8px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 4px;
+        border: 1px solid var(--border);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff;
+        border: none;
+      }
+      .btn.primary:hover {
+        text-decoration: none;
+        opacity: 0.92;
+      }
+      .btn.secondary {
+        background: var(--panel);
+        color: var(--text);
+      }
+      section {
+        padding: 32px 0;
+        border-top: 1px solid var(--border);
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 0 0 16px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      code {
+        background: var(--code);
+        padding: 2px 6px;
+        border-radius: 5px;
+        font-size: 0.9em;
+      }
+      pre {
+        background: var(--code);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        overflow-x: auto;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      ul.commands {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul.commands li {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      ul.commands li:last-child {
+        border-bottom: none;
+      }
+      .pills code {
+        display: inline-block;
+        margin: 3px 4px;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 40px 20px 56px;
+        border-top: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <h1>Obsidian Objects</h1>
+        <p class="tagline">
+          Schema-driven, object-based note-taking for Obsidian, built on native Markdown, Properties, and Bases.
+        </p>
+        <p class="badges">
+          <a href="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml"
+            ><img src="https://github.com/andrewmcodes/obsidian-objects/actions/workflows/lint.yml/badge.svg" alt="CI"
+          /></a>
+          <img src="https://img.shields.io/badge/minAppVersion-1.13.0-7c3aed" alt="Minimum Obsidian version 1.13.0" />
+          <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" />
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/andrewmcodes/obsidian-objects">View on GitHub</a>
+          <a class="btn secondary" href="#install">Install</a>
+        </div>
+        <img class="banner" src="assets/social-image.png" alt="Obsidian Objects" />
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="about">
+        <p>
+          Define object types like Person, Project, or Meeting, create structured notes through a modal, and browse them
+          with native Bases. Everything lives in plain Markdown with Properties, so your notes stay fully readable even
+          if you disable or uninstall the plugin.
+        </p>
+      </section>
+
+      <section id="features">
+        <h2>Features</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Schema-driven objects</h3>
+            <p>Each type defines its folder, filename template, properties, body templates, and validation rules.</p>
+          </div>
+          <div class="card">
+            <h3>Creation modal</h3>
+            <p>
+              Pick a type, fill fields with autocomplete and validation, choose a template, and get valid Properties.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Dynamic commands</h3>
+            <p>Every schema gets a <code>Create &lt;Schema&gt;</code> command, plus a generic object picker.</p>
+          </div>
+          <div class="card">
+            <h3>Relationships</h3>
+            <p>
+              <code>link</code> / <code>multilink</code> properties store wikilinks, scoped to a chosen object type.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Native Bases</h3>
+            <p>Generate <code>.base</code> files with table and card views that filter on <code>type</code>.</p>
+          </div>
+          <div class="card">
+            <h3>Dashboard</h3>
+            <p>A sidebar view lists every object grouped by type for quick browsing.</p>
+          </div>
+          <div class="card">
+            <h3>Validation &amp; actions</h3>
+            <p>Regex / min-max / format checks, plus custom per-schema commands on notes.</p>
+          </div>
+          <div class="card">
+            <h3>Local-first</h3>
+            <p>
+              No external services, no proprietary storage. <code>type</code> and <code>created_on</code> are automatic.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="property-types">
+        <h2>Property types</h2>
+        <p class="pills">
+          <code>text</code> <code>textarea</code> <code>number</code> <code>date</code> <code>checkbox</code>
+          <code>select</code> <code>multiselect</code> <code>link</code> <code>multilink</code> <code>email</code>
+          <code>url</code>
+        </p>
+      </section>
+
+      <section id="install">
+        <h2>Install</h2>
+        <p>
+          Requires <strong>Obsidian 1.13+</strong>. Copy the release artifacts into your vault, then enable the plugin.
+        </p>
+        <pre><code># From a release, place these in your vault:
+&lt;Vault&gt;/.obsidian/plugins/obsidian-objects/
+  main.js
+  manifest.json
+  styles.css</code></pre>
+        <p>
+          Then enable <strong>Settings → Community plugins</strong> (turn off Restricted mode if asked), reload, and
+          turn on <strong>Objects</strong> under <strong>Installed plugins</strong>.
+        </p>
+      </section>
+
+      <section id="commands">
+        <h2>Commands</h2>
+        <ul class="commands">
+          <li><strong>Create object</strong> — open the type picker, then the creation modal.</li>
+          <li><strong>Create &lt;Schema&gt;</strong> — create an object of a specific type directly.</li>
+          <li><strong>Promote selection to object</strong> — convert selected text into a new object.</li>
+          <li><strong>Generate Bases</strong> — write a <code>.base</code> file per schema (table + card views).</li>
+          <li><strong>Open dashboard</strong> — open the objects dashboard in the sidebar.</li>
+          <li><strong>Export / Import schemas</strong> — share schemas as JSON.</li>
+        </ul>
+      </section>
+
+      <section id="docs">
+        <h2>Documentation</h2>
+        <p>
+          Full contributor guide and conventions live in the repository:
+          <a href="https://github.com/andrewmcodes/obsidian-objects#readme">README</a>,
+          <a href="https://github.com/andrewmcodes/obsidian-objects/blob/main/docs/conventions/CONVENTIONS.md"
+            >conventions</a
+          >, and <a href="https://github.com/andrewmcodes/obsidian-objects/blob/main/docs/releasing.md">releasing</a>.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        <a href="https://github.com/andrewmcodes/obsidian-objects">github.com/andrewmcodes/obsidian-objects</a> · MIT
+        License
+      </p>
+    </footer>
+  </body>
+</html>
