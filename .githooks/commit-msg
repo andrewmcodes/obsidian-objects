@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Validate commit messages against @andrewmcodes/commitlint-config.
+# Enable with: mise run hooks (or `git config core.hooksPath .githooks`).
+npx --no-install commitlint --edit "$1"
