@@ -41,6 +41,7 @@ Source lives in `src/`; keep `main.ts` minimal (lifecycle only) and delegate to:
   Obsidian; vault/UI access isolated to clearly named methods.
 - `modals/` — `Modal` subclasses (UI).
 - `settings/` — settings tab and schema editor.
+- `views/` — `ItemView` subclasses (e.g. the objects dashboard).
 - `commands/` — command registration.
 - `utils/` — small pure helpers (dates, filenames, defaults, constants).
 

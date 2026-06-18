@@ -25,7 +25,21 @@ plugin, all your data remains fully accessible.
 
 ## Property types
 
-`text`, `textarea`, `number`, `date`, `checkbox`, `select`, `multiselect`.
+`text`, `textarea`, `number`, `date`, `checkbox`, `select`, `multiselect`,
+`link`, `multilink` (wikilink relationships), `email`, `url`.
+
+## Beyond the basics
+
+- **Relationships** — `link`/`multilink` properties store `[[wikilinks]]`.
+- **Multiple templates** — schemas can define named body templates to choose
+  from when creating an object.
+- **Validation rules** — properties support regex patterns, number min/max, and
+  email/url format checks, enforced in the creation modal.
+- **Object actions** — schemas can define custom commands for their notes
+  (set a property, append a template section, or create a linked object).
+- **Dashboard** — a sidebar view (ribbon icon or **Open dashboard** command)
+  lists every object grouped by type.
+- **Schema sharing** — export schemas to JSON and import them in another vault.
 
 ## Getting started
 
@@ -40,7 +54,9 @@ plugin, all your data remains fully accessible.
 - **Create object** — open the object type picker, then the creation modal.
 - **Create _&lt;Schema&gt;_** — create an object of a specific type directly.
 - **Promote selection to object** — convert selected text into a new object.
-- **Generate Bases** — write a `.base` file per schema into the Bases folder.
+- **Generate Bases** — write a `.base` file per schema (table + card views).
+- **Open dashboard** — open the objects dashboard in the sidebar.
+- **Export schemas to clipboard** / **Import schemas** — share schemas as JSON.
 - **Open settings** — open the Objects settings tab.
 
 ## Settings
