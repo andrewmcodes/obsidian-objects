@@ -8,6 +8,7 @@ function cloneSchema(schema: Schema): Schema {
   return {
     ...schema,
     properties: schema.properties.map((prop) => ({ ...prop, options: prop.options ? [...prop.options] : undefined })),
+    templates: schema.templates?.map((template) => ({ ...template })),
   };
 }
 
@@ -107,6 +108,44 @@ export class SchemaEditModal extends Modal {
       }),
     );
 
+    contentEl.createEl('h3', { text: 'Additional templates' });
+    contentEl.createEl('p', {
+      text: 'Optional named body templates the user can pick when creating an object.',
+      cls: 'setting-item-description',
+    });
+    const templates = (this.draft.templates ??= []);
+    templates.forEach((template, index) => {
+      new Setting(contentEl)
+        .addText((text) =>
+          text
+            .setPlaceholder('Template name')
+            .setValue(template.name)
+            .onChange((value) => (template.name = value)),
+        )
+        .addTextArea((area) => {
+          area
+            .setPlaceholder('Body')
+            .setValue(template.body)
+            .onChange((value) => (template.body = value));
+          area.inputEl.rows = 4;
+        })
+        .addExtraButton((button) =>
+          button
+            .setIcon('trash')
+            .setTooltip('Remove template')
+            .onClick(() => {
+              templates.splice(index, 1);
+              this.render();
+            }),
+        );
+    });
+    new Setting(contentEl).addButton((button) =>
+      button.setButtonText('Add template').onClick(() => {
+        templates.push({ name: '', body: '' });
+        this.render();
+      }),
+    );
+
     new Setting(contentEl)
       .addButton((button) =>
         button
@@ -179,6 +218,11 @@ export class SchemaEditModal extends Modal {
   /** Validate and persist the draft via `onSave`. */
   private async save(): Promise<void> {
     this.draft.label = this.draft.label.trim();
+    // Drop incomplete named templates; omit the field entirely if none remain.
+    if (this.draft.templates) {
+      this.draft.templates = this.draft.templates.filter((t) => t.name.trim() !== '' && t.body.trim() !== '');
+      if (this.draft.templates.length === 0) delete this.draft.templates;
+    }
     if (this.isNew && !this.draft.id) {
       this.draft.id = slugifyId(this.draft.label, (id) => this.ctx.schemas.byId(id) !== undefined);
     }

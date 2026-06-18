@@ -1,6 +1,8 @@
 // Renders a schema body template. Pure logic, no Obsidian dependency.
 // Supported variables (per PRD): {{title}}, {{date}}, {{type}}.
 
+import { NamedTemplate, Schema } from '../types/schema';
+
 export interface TemplateVars {
   title: string;
   date: string;
@@ -22,4 +24,12 @@ export function renderTemplate(template: string, vars: TemplateVars): string {
     const replacement = map[name.toLowerCase()];
     return replacement === undefined ? match : replacement;
   });
+}
+
+/**
+ * The list of body templates a user can choose from for a schema: the default
+ * body template (named "Default") followed by any named templates.
+ */
+export function templateChoices(schema: Schema): NamedTemplate[] {
+  return [{ name: 'Default', body: schema.bodyTemplate ?? '' }, ...(schema.templates ?? [])];
 }

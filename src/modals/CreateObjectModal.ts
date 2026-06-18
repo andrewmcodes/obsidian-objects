@@ -4,6 +4,7 @@ import { ObjectsContext } from '../types/context';
 import { propertyLabel } from '../services/SchemaService';
 import { ObjectValues } from '../services/ObjectService';
 import { PropertyValue } from '../services/FrontmatterService';
+import { templateChoices } from '../services/TemplateService';
 import { ConflictModal } from './ConflictModal';
 
 /**
@@ -14,6 +15,8 @@ export class CreateObjectModal extends Modal {
   private title = '';
   private values: ObjectValues = {};
   private submitting = false;
+  /** Body template chosen in the template picker (when a schema has several). */
+  private bodyTemplate: string;
 
   constructor(
     private ctx: ObjectsContext,
@@ -22,6 +25,8 @@ export class CreateObjectModal extends Modal {
   ) {
     super(ctx.app);
     this.title = options.initialTitle?.trim() ?? '';
+    // Default to the schema's primary body template.
+    this.bodyTemplate = schema.bodyTemplate ?? '';
     // Seed defaults from the schema so unspecified values still serialize.
     for (const prop of schema.properties) {
       if (prop.default !== undefined) this.values[prop.key] = prop.default;
@@ -50,6 +55,23 @@ export class CreateObjectModal extends Modal {
 
     for (const prop of this.schema.properties) {
       this.renderProperty(contentEl, prop);
+    }
+
+    const choices = templateChoices(this.schema);
+    if (choices.length > 1) {
+      new Setting(contentEl)
+        .setName('Template')
+        .setDesc('Body template for the new note.')
+        .addDropdown((drop) => {
+          choices.forEach((choice, index) => {
+            drop.addOption(String(index), choice.name);
+          });
+          drop.setValue('0');
+          drop.onChange((value) => {
+            const choice = choices[Number(value)];
+            if (choice) this.bodyTemplate = choice.body;
+          });
+        });
     }
 
     new Setting(contentEl).addButton((button) =>
@@ -196,7 +218,7 @@ export class CreateObjectModal extends Modal {
 
   /** Perform the actual file creation and post-create actions. */
   private async finishCreate(name: string, title: string): Promise<void> {
-    const { file } = await this.ctx.objects.create(this.schema, name, this.values, title);
+    const { file } = await this.ctx.objects.create(this.schema, name, this.values, title, this.bodyTemplate);
     new Notice(`Created ${file.basename}`);
     if (this.options.onCreated) await this.options.onCreated(file);
     if (this.ctx.settings.openOnCreate) await this.openFile(file);

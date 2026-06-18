@@ -33,6 +33,14 @@ export interface PropertyDefinition {
   default?: string | number | boolean | string[];
 }
 
+/** A named body template. Schemas may define several to choose between. */
+export interface NamedTemplate {
+  /** Display name shown in the creation modal's template picker. */
+  name: string;
+  /** Markdown body; supports {{title}}, {{date}}, {{type}}. */
+  body: string;
+}
+
 export interface Schema {
   /** Stable identifier, also written to the `type` property. */
   id: string;
@@ -44,6 +52,8 @@ export interface Schema {
   filenameTemplate: string;
   /** Ordered property definitions. */
   properties: PropertyDefinition[];
-  /** Markdown body template; supports {{title}}, {{date}}, {{type}}. */
+  /** Default Markdown body template; supports {{title}}, {{date}}, {{type}}. */
   bodyTemplate: string;
+  /** Optional additional named templates the user can pick when creating. */
+  templates?: NamedTemplate[];
 }

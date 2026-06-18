@@ -18,6 +18,7 @@ export function buildNoteContent(
   title: string,
   values: ObjectValues,
   date: string = isoDate(),
+  bodyTemplate?: string,
 ): string {
   const entries: FrontmatterEntry[] = [
     { key: 'type', type: 'text', value: schema.id },
@@ -27,7 +28,7 @@ export function buildNoteContent(
     entries.push({ key: prop.key, type: prop.type, value: values[prop.key] });
   }
   const frontmatter = buildFrontmatter(entries);
-  const body = renderTemplate(schema.bodyTemplate ?? '', {
+  const body = renderTemplate(bodyTemplate ?? schema.bodyTemplate ?? '', {
     title,
     date,
     type: schema.id,
@@ -99,11 +100,17 @@ export class ObjectService {
   }
 
   /** Create the note file, creating folders as needed. */
-  async create(schema: Schema, name: string, values: ObjectValues, title: string): Promise<CreateResult> {
+  async create(
+    schema: Schema,
+    name: string,
+    values: ObjectValues,
+    title: string,
+    bodyTemplate?: string,
+  ): Promise<CreateResult> {
     const folder = this.folderFor(schema);
     await this.ensureFolder(folder);
     const path = normalizePath(notePath(folder, name));
-    const content = buildNoteContent(schema, title, values);
+    const content = buildNoteContent(schema, title, values, undefined, bodyTemplate);
     const file = await this.app.vault.create(path, content);
     return { file, path };
   }
