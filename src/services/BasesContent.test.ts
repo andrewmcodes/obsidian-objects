@@ -25,9 +25,10 @@ describe('buildBaseFile', () => {
     expect(buildBaseFile(schema)).toContain(`- 'type == "person"'`);
   });
 
-  it('declares a table view ordering file.name and properties', () => {
+  it('declares table and card views ordering file.name and properties', () => {
     const base = buildBaseFile(schema);
     expect(base).toContain('type: table');
+    expect(base).toContain('type: cards');
     expect(base).toContain('- file.name');
     expect(base).toContain('- email');
   });

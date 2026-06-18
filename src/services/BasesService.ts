@@ -9,15 +9,22 @@ import { ObjectsSettings } from '../types/settings';
 /** Build the YAML for a `.base` file that surfaces one schema's objects. */
 export function buildBaseFile(schema: Schema): string {
   const order = ['file.name', ...schema.properties.map((prop) => prop.key)];
+  const orderLines = (indent: string): string[] => order.map((field) => `${indent}- ${field}`);
   const lines = [
     'filters:',
     '  and:',
     `    - 'type == "${schema.id}"'`,
     'views:',
+    // Native table view.
     '  - type: table',
     `    name: ${schema.label}`,
     '    order:',
-    ...order.map((field) => `      - ${field}`),
+    ...orderLines('      '),
+    // Native card view (Capacities-style browsing) over the same fields.
+    '  - type: cards',
+    `    name: ${schema.label} cards`,
+    '    order:',
+    ...orderLines('      '),
     '',
   ];
   return lines.join('\n');
