@@ -1,4 +1,4 @@
-import { PROPERTY_TYPES, Schema } from '../types/schema';
+import { ACTION_TYPES, ActionType, ObjectAction, PROPERTY_TYPES, Schema } from '../types/schema';
 import { validateSchema } from './SchemaService';
 
 // Serialize/deserialize schemas as JSON for sharing between vaults. Pure logic.
@@ -43,6 +43,32 @@ function asDefault(value: unknown): string | number | boolean | string[] | undef
   return undefined;
 }
 
+/** Keep a finite number, otherwise `undefined`. */
+function asNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+/** Keep a non-empty string, otherwise `undefined`. */
+function asOptionalString(value: unknown): string | undefined {
+  return typeof value === 'string' && value !== '' ? value : undefined;
+}
+
+/** Coerce an unknown value into a valid action, or `null` if unusable. */
+function coerceAction(raw: unknown): ObjectAction | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  if (!(ACTION_TYPES as readonly string[]).includes(asString(r.type))) return null;
+  return {
+    id: asString(r.id),
+    name: asString(r.name),
+    type: r.type as ActionType,
+    property: asOptionalString(r.property),
+    value: asOptionalString(r.value),
+    template: asOptionalString(r.template),
+    targetSchema: asOptionalString(r.targetSchema),
+  };
+}
+
 /** Coerce an unknown value into a Schema, filling sane defaults. */
 function coerceSchema(raw: unknown): Schema | null {
   if (typeof raw !== 'object' || raw === null) return null;
@@ -61,8 +87,16 @@ function coerceSchema(raw: unknown): Schema | null {
           required: p.required === true ? true : undefined,
           options: Array.isArray(p.options) ? p.options.map(asString) : undefined,
           default: asDefault(p.default),
+          pattern: asOptionalString(p.pattern),
+          min: asNumber(p.min),
+          max: asNumber(p.max),
+          linkType: asOptionalString(p.linkType),
         }))
     : [];
+
+  const actions = Array.isArray(r.actions)
+    ? r.actions.map(coerceAction).filter((a): a is ObjectAction => a !== null)
+    : undefined;
 
   return {
     id: r.id,
@@ -76,6 +110,7 @@ function coerceSchema(raw: unknown): Schema | null {
           .filter((t): t is Record<string, unknown> => typeof t === 'object' && t !== null)
           .map((t) => ({ name: asString(t.name), body: asString(t.body) }))
       : undefined,
+    actions: actions && actions.length ? actions : undefined,
   };
 }
 
