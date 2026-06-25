@@ -1,4 +1,4 @@
-import { ACTION_TYPES, ActionType, ObjectAction, PROPERTY_TYPES, Schema } from '../types/schema';
+import { ACTION_TYPES, ActionType, ObjectAction, PROPERTY_TYPES, Schema, SchemaVariant } from '../types/schema';
 import { validateSchema } from './SchemaService';
 
 // Serialize/deserialize schemas as JSON for sharing between vaults. Pure logic.
@@ -53,6 +53,25 @@ function asOptionalString(value: unknown): string | undefined {
   return typeof value === 'string' && value !== '' ? value : undefined;
 }
 
+/** Coerce an unknown value into a variant, or `null` if it has no name. */
+function coerceVariant(raw: unknown): SchemaVariant | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  const name = asString(r.name);
+  if (!name) return null;
+  const variant: SchemaVariant = { name };
+  if (typeof r.body === 'string') variant.body = r.body;
+  if (typeof r.defaults === 'object' && r.defaults !== null) {
+    const defaults: Record<string, string | number | boolean | string[]> = {};
+    for (const [key, value] of Object.entries(r.defaults as Record<string, unknown>)) {
+      const coerced = asDefault(value);
+      if (coerced !== undefined) defaults[key] = coerced;
+    }
+    if (Object.keys(defaults).length) variant.defaults = defaults;
+  }
+  return variant;
+}
+
 /** Coerce an unknown value into a valid action, or `null` if unusable. */
 function coerceAction(raw: unknown): ObjectAction | null {
   if (typeof raw !== 'object' || raw === null) return null;
@@ -98,6 +117,10 @@ function coerceSchema(raw: unknown): Schema | null {
     ? r.actions.map(coerceAction).filter((a): a is ObjectAction => a !== null)
     : undefined;
 
+  const variants = Array.isArray(r.variants)
+    ? r.variants.map(coerceVariant).filter((v): v is SchemaVariant => v !== null)
+    : undefined;
+
   return {
     id: r.id,
     label: r.label,
@@ -110,6 +133,7 @@ function coerceSchema(raw: unknown): Schema | null {
           .filter((t): t is Record<string, unknown> => typeof t === 'object' && t !== null)
           .map((t) => ({ name: asString(t.name), body: asString(t.body) }))
       : undefined,
+    variants: variants && variants.length ? variants : undefined,
     actions: actions && actions.length ? actions : undefined,
   };
 }

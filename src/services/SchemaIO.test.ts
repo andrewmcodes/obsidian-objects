@@ -91,6 +91,32 @@ describe('exportSchemas / parseSchemas', () => {
     expect(schema?.actions?.[0]).toMatchObject({ type: 'set-property', property: 'status', value: 'done' });
   });
 
+  it('round-trips variants (name, defaults, body) on import', () => {
+    const bundle = {
+      version: 1,
+      schemas: [
+        {
+          id: 'meeting',
+          label: 'Meeting',
+          properties: [{ key: 'status', type: 'select', options: ['todo', 'in_progress'] }],
+          variants: [
+            { name: 'Recurring', defaults: { status: 'in_progress', tags: ['recurring'] }, body: '## Agenda\n' },
+            { name: '' },
+          ],
+        },
+      ],
+    };
+    const { schemas, errors } = parseSchemas(JSON.stringify(bundle));
+    expect(errors).toEqual([]);
+    // The nameless variant is dropped; the named one keeps its defaults and body.
+    expect(schemas[0]?.variants).toHaveLength(1);
+    expect(schemas[0]?.variants?.[0]).toEqual({
+      name: 'Recurring',
+      defaults: { status: 'in_progress', tags: ['recurring'] },
+      body: '## Agenda\n',
+    });
+  });
+
   it('defaults unknown property types to text', () => {
     const { schemas } = parseSchemas(
       JSON.stringify({ version: 1, schemas: [{ id: 'x', label: 'X', properties: [{ key: 'k', type: 'bogus' }] }] }),
