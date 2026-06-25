@@ -19,6 +19,8 @@ export class CreateObjectModal extends Modal {
   private submitting = false;
   /** Body template chosen in the template picker (when a schema has several). */
   private bodyTemplate: string;
+  /** Name of the selected variant; '' means none (schema defaults). */
+  private variantName = '';
 
   constructor(
     private ctx: ObjectsContext,
@@ -36,9 +38,14 @@ export class CreateObjectModal extends Modal {
   }
 
   onOpen(): void {
+    this.titleEl.setText(`Create ${this.schema.label}`);
+    this.renderBody(true);
+  }
+
+  /** Build (or rebuild) the modal body. Rebuilt when the variant changes. */
+  private renderBody(focusTitle: boolean): void {
     const { contentEl } = this;
     contentEl.empty();
-    this.titleEl.setText(`Create ${this.schema.label}`);
 
     new Setting(contentEl)
       .setName('Title')
@@ -52,15 +59,34 @@ export class CreateObjectModal extends Modal {
             void this.submit();
           }
         });
-        window.setTimeout(() => text.inputEl.focus(), 0);
+        if (focusTitle) window.setTimeout(() => text.inputEl.focus(), 0);
       });
+
+    const variants = this.schema.variants ?? [];
+    if (variants.length) {
+      new Setting(contentEl)
+        .setName('Variant')
+        .setDesc('Preset defaults (and body) for the new note.')
+        .addDropdown((drop) => {
+          drop.addOption('', 'Default');
+          for (const variant of variants) drop.addOption(variant.name, variant.name);
+          drop.setValue(this.variantName);
+          drop.onChange((value) => {
+            this.variantName = value;
+            this.applyVariant();
+            this.renderBody(false);
+          });
+        });
+    }
 
     for (const prop of this.schema.properties) {
       this.renderProperty(contentEl, prop);
     }
 
+    // A variant carries its own body, so only offer the template picker when no
+    // variant is active.
     const choices = templateChoices(this.schema);
-    if (choices.length > 1) {
+    if (choices.length > 1 && this.variantName === '') {
       new Setting(contentEl)
         .setName('Template')
         .setDesc('Body template for the new note.')
@@ -82,6 +108,19 @@ export class CreateObjectModal extends Modal {
         .setCta()
         .onClick(() => void this.submit()),
     );
+  }
+
+  /** Reset values to the schema defaults, then overlay the selected variant. */
+  private applyVariant(): void {
+    this.values = {};
+    for (const prop of this.schema.properties) {
+      if (prop.default !== undefined) this.values[prop.key] = prop.default;
+    }
+    const variant = this.schema.variants?.find((v) => v.name === this.variantName);
+    if (variant?.defaults) {
+      for (const [key, value] of Object.entries(variant.defaults)) this.values[key] = value;
+    }
+    this.bodyTemplate = variant?.body ?? this.schema.bodyTemplate ?? '';
   }
 
   /** Render a single property input, wired to update `this.values`. */
