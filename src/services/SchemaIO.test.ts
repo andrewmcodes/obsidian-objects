@@ -60,6 +60,37 @@ describe('exportSchemas / parseSchemas', () => {
     expect(schemas[0]?.properties[1]?.default).toEqual(['state/unprocessed']);
   });
 
+  it('round-trips linkType, pattern, min/max, and actions on import', () => {
+    const bundle = {
+      version: 1,
+      schemas: [
+        {
+          id: 'x',
+          label: 'X',
+          properties: [
+            { key: 'owner', type: 'link', linkType: 'person' },
+            { key: 'code', type: 'text', pattern: '[A-Z]{2,}' },
+            { key: 'score', type: 'number', min: 1, max: 5 },
+          ],
+          actions: [
+            { id: 'done', name: 'Mark done', type: 'set-property', property: 'status', value: 'done' },
+            { name: 'Bogus', type: 'not-a-real-type' },
+          ],
+        },
+      ],
+    };
+    const { schemas, errors } = parseSchemas(JSON.stringify(bundle));
+    expect(errors).toEqual([]);
+    const [schema] = schemas;
+    expect(schema?.properties[0]?.linkType).toBe('person');
+    expect(schema?.properties[1]?.pattern).toBe('[A-Z]{2,}');
+    expect(schema?.properties[2]?.min).toBe(1);
+    expect(schema?.properties[2]?.max).toBe(5);
+    // The action with an unrecognized type is dropped; the valid one survives.
+    expect(schema?.actions).toHaveLength(1);
+    expect(schema?.actions?.[0]).toMatchObject({ type: 'set-property', property: 'status', value: 'done' });
+  });
+
   it('defaults unknown property types to text', () => {
     const { schemas } = parseSchemas(
       JSON.stringify({ version: 1, schemas: [{ id: 'x', label: 'X', properties: [{ key: 'k', type: 'bogus' }] }] }),
