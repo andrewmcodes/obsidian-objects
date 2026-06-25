@@ -335,6 +335,14 @@ export class SchemaEditModal extends Modal {
             .onChange((value) => (prop.default = asStringArray(value))),
         );
         break;
+      case 'date':
+      case 'datetime':
+        setting.addText((text) => {
+          text.inputEl.type = prop.type === 'date' ? 'date' : 'datetime-local';
+          text.setValue(typeof prop.default === 'string' ? prop.default : '');
+          text.onChange((value) => (prop.default = value === '' ? undefined : value));
+        });
+        break;
       default:
         setting.addText((text) =>
           text
