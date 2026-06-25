@@ -157,8 +157,25 @@ export class CreateObjectModal extends Modal {
     }
   }
 
-  /** Render multiselect as a row of toggles, one per option. */
+  /**
+   * Render multiselect as a row of toggles, one per option. With no options it
+   * is a free-form list (e.g. tags, aliases), entered as comma-separated text.
+   */
   private renderMultiselect(setting: Setting, prop: Schema['properties'][number]): void {
+    if (!prop.options || prop.options.length === 0) {
+      setting.setDesc('Comma-separated values.');
+      setting.addText((c) => {
+        c.setValue(Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]).join(', ') : '');
+        c.onChange(
+          (v) =>
+            (this.values[prop.key] = v
+              .split(',')
+              .map((item) => item.trim())
+              .filter((item) => item !== '')),
+        );
+      });
+      return;
+    }
     const selected = new Set<string>(Array.isArray(this.values[prop.key]) ? (this.values[prop.key] as string[]) : []);
     setting.setDesc('Select all that apply.');
     const wrapper = setting.controlEl.createDiv({ cls: 'objects-multiselect' });
