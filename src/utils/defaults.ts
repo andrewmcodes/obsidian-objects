@@ -98,5 +98,6 @@ export const DEFAULT_SETTINGS: ObjectsSettings = {
   defaultFolder: 'Objects',
   basesFolder: 'Bases',
   openOnCreate: true,
+  evaluateTemplater: false,
   hasSeededDefaults: false,
 };
