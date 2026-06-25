@@ -32,6 +32,17 @@ function asString(value: unknown): string {
   return typeof value === 'string' ? value : typeof value === 'number' ? String(value) : '';
 }
 
+/**
+ * Coerce an unknown value into a valid property `default`, preserving the
+ * supported value shapes (string, number, boolean, or string array). Anything
+ * else becomes `undefined` so it is simply omitted.
+ */
+function asDefault(value: unknown): string | number | boolean | string[] | undefined {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (Array.isArray(value)) return value.map(asString);
+  return undefined;
+}
+
 /** Coerce an unknown value into a Schema, filling sane defaults. */
 function coerceSchema(raw: unknown): Schema | null {
   if (typeof raw !== 'object' || raw === null) return null;
@@ -49,6 +60,7 @@ function coerceSchema(raw: unknown): Schema | null {
             : 'text',
           required: p.required === true ? true : undefined,
           options: Array.isArray(p.options) ? p.options.map(asString) : undefined,
+          default: asDefault(p.default),
         }))
     : [];
 

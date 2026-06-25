@@ -40,6 +40,26 @@ describe('exportSchemas / parseSchemas', () => {
     expect(errors).toHaveLength(2);
   });
 
+  it('preserves a property default through import', () => {
+    const { schemas } = parseSchemas(
+      JSON.stringify({
+        version: 1,
+        schemas: [
+          {
+            id: 'x',
+            label: 'X',
+            properties: [
+              { key: 'status', type: 'select', options: ['a', 'b'], default: 'a' },
+              { key: 'tags', type: 'multiselect', default: ['state/unprocessed'] },
+            ],
+          },
+        ],
+      }),
+    );
+    expect(schemas[0]?.properties[0]?.default).toBe('a');
+    expect(schemas[0]?.properties[1]?.default).toEqual(['state/unprocessed']);
+  });
+
   it('defaults unknown property types to text', () => {
     const { schemas } = parseSchemas(
       JSON.stringify({ version: 1, schemas: [{ id: 'x', label: 'X', properties: [{ key: 'k', type: 'bogus' }] }] }),
