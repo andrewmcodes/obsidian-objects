@@ -40,6 +40,14 @@ describe('serializeValue', () => {
     expect(serializeValue('multilink', [])).toBe('[]');
   });
 
+  it('emits dates bare and normalizes datetimes to seconds precision', () => {
+    expect(serializeValue('date', '2026-06-17')).toBe('2026-06-17');
+    // The datetime-local picker omits seconds; match Obsidian's YYYY-MM-DDTHH:mm:ss.
+    expect(serializeValue('datetime', '2026-06-17T09:30')).toBe('2026-06-17T09:30:00');
+    // An existing seconds component is preserved.
+    expect(serializeValue('datetime', '2026-06-17T09:30:45')).toBe('2026-06-17T09:30:45');
+  });
+
   it('serializes email and url as scalars', () => {
     expect(serializeValue('email', 'a@b.com')).toBe('"a@b.com"');
     expect(serializeValue('url', 'https://x.dev')).toBe('"https://x.dev"');

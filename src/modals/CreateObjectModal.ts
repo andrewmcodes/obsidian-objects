@@ -108,6 +108,12 @@ export class CreateObjectModal extends Modal {
           c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
         });
         break;
+      case 'datetime':
+        setting.addText((c) => {
+          c.inputEl.type = 'datetime-local';
+          c.setValue(String(this.values[prop.key] ?? '')).onChange((v) => set(v));
+        });
+        break;
       case 'checkbox':
         setting.addToggle((c) => c.setValue(this.values[prop.key] === true).onChange((v) => set(v)));
         break;
