@@ -4,6 +4,7 @@ import { ObjectsSettings } from '../types/settings';
 import { buildFrontmatter, FrontmatterEntry, PropertyValue } from './FrontmatterService';
 import { renderTemplate } from './TemplateService';
 import { nextAvailableName, notePath, resolveFileName } from '../utils/filename';
+import { runTemplater } from './TemplaterService';
 import { isoDate } from '../utils/date';
 
 export type ObjectValues = Record<string, PropertyValue>;
@@ -132,6 +133,9 @@ export class ObjectService {
     const path = normalizePath(notePath(folder, name));
     const content = buildNoteContent(schema, title, values, undefined, bodyTemplate, dateFormatter());
     const file = await this.app.vault.create(path, content);
+    // After our own {{…}} tokens are written, optionally let Templater evaluate
+    // any <% … %> commands in the new note.
+    if (this.settings.evaluateTemplater) await runTemplater(this.app, file);
     return { file, path };
   }
 }
