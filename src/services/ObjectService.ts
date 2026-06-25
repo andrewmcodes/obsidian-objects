@@ -5,6 +5,8 @@ import { buildFrontmatter, FrontmatterEntry, PropertyValue } from './Frontmatter
 import { renderTemplate } from './TemplateService';
 import { nextAvailableName, notePath, resolveFileName } from '../utils/filename';
 import { runTemplater } from './TemplaterService';
+import { AutoProperty } from '../types/settings';
+import { DEFAULT_AUTO_PROPERTIES } from '../utils/defaults';
 import { isoDate } from '../utils/date';
 
 export type ObjectValues = Record<string, PropertyValue>;
@@ -21,9 +23,11 @@ export function dateFormatter(): (format: string) => string {
 }
 
 /**
- * Build the full Markdown note content for an object. `type` and `created_on`
- * always lead the frontmatter; user-defined properties follow in schema order.
- * Pass `formatDate` to resolve `{{date:FORMAT}}`/`{{time:FORMAT}}` body tokens.
+ * Build the full Markdown note content for an object. `type` always leads the
+ * frontmatter, followed by the configured auto-properties (default
+ * `created_on`) and then the schema's properties in order. Pass `formatDate` to
+ * resolve `{{date:FORMAT}}`/`{{time:FORMAT}}` tokens in templates and
+ * auto-property values.
  */
 export function buildNoteContent(
   schema: Schema,
@@ -32,22 +36,22 @@ export function buildNoteContent(
   date: string = isoDate(),
   bodyTemplate?: string,
   formatDate?: (format: string) => string,
+  autoProperties: AutoProperty[] = DEFAULT_AUTO_PROPERTIES,
 ): string {
-  const entries: FrontmatterEntry[] = [
-    { key: 'type', type: 'text', value: schema.id },
-    { key: 'created_on', type: 'date', value: date },
-  ];
+  const vars = { title, date, type: schema.id, properties: values, formatDate };
+  const entries: FrontmatterEntry[] = [{ key: 'type', type: 'text', value: schema.id }];
+  // Auto-properties go after `type`; skip `type` and any key a schema property
+  // already owns so the note never has duplicate frontmatter keys.
+  const schemaKeys = new Set(schema.properties.map((prop) => prop.key));
+  for (const auto of autoProperties) {
+    if (!auto.key || auto.key === 'type' || schemaKeys.has(auto.key)) continue;
+    entries.push({ key: auto.key, type: auto.type, value: renderTemplate(auto.value, vars) });
+  }
   for (const prop of schema.properties) {
     entries.push({ key: prop.key, type: prop.type, value: values[prop.key] });
   }
   const frontmatter = buildFrontmatter(entries);
-  const body = renderTemplate(bodyTemplate ?? schema.bodyTemplate ?? '', {
-    title,
-    date,
-    type: schema.id,
-    properties: values,
-    formatDate,
-  }).trim();
+  const body = renderTemplate(bodyTemplate ?? schema.bodyTemplate ?? '', vars).trim();
   return body ? `${frontmatter}\n\n${body}\n` : `${frontmatter}\n`;
 }
 
@@ -131,7 +135,15 @@ export class ObjectService {
     const folder = this.folderFor(schema);
     await this.ensureFolder(folder);
     const path = normalizePath(notePath(folder, name));
-    const content = buildNoteContent(schema, title, values, undefined, bodyTemplate, dateFormatter());
+    const content = buildNoteContent(
+      schema,
+      title,
+      values,
+      undefined,
+      bodyTemplate,
+      dateFormatter(),
+      this.settings.autoProperties,
+    );
     const file = await this.app.vault.create(path, content);
     // After our own {{…}} tokens are written, optionally let Templater evaluate
     // any <% … %> commands in the new note.

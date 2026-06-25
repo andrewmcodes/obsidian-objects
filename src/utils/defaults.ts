@@ -1,5 +1,11 @@
 import { Schema } from '../types/schema';
-import { ObjectsSettings } from '../types/settings';
+import { AutoProperty, ObjectsSettings } from '../types/settings';
+
+/**
+ * Properties added to every new note by default. `created_on` is seeded here
+ * rather than hardcoded so users can remove it or add their own in settings.
+ */
+export const DEFAULT_AUTO_PROPERTIES: AutoProperty[] = [{ key: 'created_on', type: 'date', value: '{{date}}' }];
 
 // Default schemas seeded on first install. Users may freely modify or delete
 // them.
@@ -97,6 +103,7 @@ export const DEFAULT_SETTINGS: ObjectsSettings = {
   schemas: [],
   defaultFolder: 'Objects',
   basesFolder: 'Bases',
+  autoProperties: DEFAULT_AUTO_PROPERTIES.map((property) => ({ ...property })),
   openOnCreate: true,
   evaluateTemplater: false,
   hasSeededDefaults: false,

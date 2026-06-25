@@ -1,4 +1,5 @@
 import { Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { PROPERTY_TYPES, PropertyType } from '../types/schema';
 import { ObjectsContext } from '../types/context';
 import { SchemaEditModal } from './SchemaEditModal';
 import { ImportSchemasModal } from '../modals/ImportSchemasModal';
@@ -80,6 +81,8 @@ export class ObjectsSettingTab extends PluginSettingTab {
         );
       /* eslint-enable obsidianmd/ui/sentence-case */
     }
+
+    this.renderAutoProperties(containerEl);
 
     new Setting(containerEl).setName('Schemas').setHeading();
 
@@ -181,5 +184,63 @@ export class ObjectsSettingTab extends PluginSettingTab {
           new ImportSchemasModal(this.ctx, () => this.render()).open();
         }),
       );
+  }
+
+  /** Render the editor for properties added to every new note. */
+  private renderAutoProperties(containerEl: HTMLElement): void {
+    new Setting(containerEl).setName('Automatic properties').setHeading();
+    containerEl.createEl('p', {
+      text: 'Added to every new note after the type. Values support {{date}}, {{time:FORMAT}}, {{title}}, {{type}}, and {{property}} tokens. Remove created_on here to stop adding it.',
+      cls: 'setting-item-description',
+    });
+
+    const autoProperties = this.ctx.settings.autoProperties;
+    autoProperties.forEach((auto, index) => {
+      new Setting(containerEl)
+        .setClass('objects-property-row')
+        .addText((text) =>
+          text
+            .setPlaceholder('Key')
+            .setValue(auto.key)
+            .onChange(async (value) => {
+              auto.key = value.trim();
+              await this.ctx.saveSettings();
+            }),
+        )
+        .addDropdown((drop) => {
+          for (const type of PROPERTY_TYPES) drop.addOption(type, type);
+          drop.setValue(auto.type).onChange(async (value) => {
+            auto.type = value as PropertyType;
+            await this.ctx.saveSettings();
+          });
+        })
+        .addText((text) =>
+          text
+            .setPlaceholder('Value, e.g. {{date}}')
+            .setValue(auto.value)
+            .onChange(async (value) => {
+              auto.value = value;
+              await this.ctx.saveSettings();
+            }),
+        )
+        .addExtraButton((button) =>
+          button
+            .setIcon('trash')
+            .setTooltip('Remove property')
+            .onClick(async () => {
+              autoProperties.splice(index, 1);
+              await this.ctx.saveSettings();
+              this.render();
+            }),
+        );
+    });
+
+    new Setting(containerEl).addButton((button) =>
+      button.setButtonText('Add automatic property').onClick(async () => {
+        autoProperties.push({ key: '', type: 'text', value: '' });
+        await this.ctx.saveSettings();
+        this.render();
+      }),
+    );
   }
 }

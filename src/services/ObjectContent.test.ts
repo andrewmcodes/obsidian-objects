@@ -43,4 +43,29 @@ describe('buildNoteContent', () => {
     const content = buildNoteContent(projectSchema, 'Vite Migration', { status: '' }, '2026-06-17');
     expect(content).not.toContain('status:');
   });
+
+  it('honors custom auto-properties, omitting created_on when removed', () => {
+    const content = buildNoteContent(projectSchema, 'Vite Migration', {}, '2026-06-17', undefined, undefined, [
+      { key: 'author', type: 'text', value: 'Andrew' },
+      { key: 'logged_at', type: 'datetime', value: '{{date}}T09:00' },
+    ]);
+    expect(content).toContain('author: Andrew');
+    expect(content).toContain('logged_at: 2026-06-17T09:00:00');
+    expect(content).not.toContain('created_on');
+  });
+
+  it('drops an auto-property whose key a schema property already owns', () => {
+    const content = buildNoteContent(
+      projectSchema,
+      'Vite Migration',
+      { status: 'active' },
+      '2026-06-17',
+      undefined,
+      undefined,
+      [{ key: 'status', type: 'text', value: 'auto' }],
+    );
+    // The schema's own `status` wins; the note has a single status line.
+    expect(content).toContain('status: active');
+    expect(content).not.toContain('status: auto');
+  });
 });
