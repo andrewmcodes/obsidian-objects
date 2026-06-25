@@ -216,7 +216,7 @@ export class CreateObjectModal extends Modal {
     this.submitting = true;
     try {
       const folder = this.ctx.objects.folderFor(this.schema);
-      const base = this.ctx.objects.baseName(this.schema, title);
+      const base = this.ctx.objects.baseName(this.schema, title, this.values);
       if (this.ctx.objects.exists(folder, base)) {
         this.handleConflict(folder, base, title);
         this.submitting = false;

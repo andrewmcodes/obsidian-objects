@@ -2,6 +2,7 @@ import { App, MarkdownView, Notice, TFile } from 'obsidian';
 import { ObjectAction, Schema } from '../types/schema';
 import { ObjectsContext } from '../types/context';
 import { renderTemplate } from './TemplateService';
+import { dateFormatter } from './ObjectService';
 import { isoDate } from '../utils/date';
 import { CreateObjectModal } from '../modals/CreateObjectModal';
 
@@ -61,10 +62,13 @@ export class ObjectActionService {
   /** Append a rendered template to the end of the note body. */
   private async appendTemplate(action: ObjectAction, file: TFile): Promise<void> {
     if (!action.template) return;
+    const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
     const rendered = renderTemplate(action.template, {
       title: file.basename,
       date: isoDate(),
       type: this.typeOf(file) ?? '',
+      properties: frontmatter ?? {},
+      formatDate: dateFormatter(),
     });
     await this.app.vault.process(file, (data) => `${data.replace(/\s*$/, '')}\n\n${rendered}\n`);
     new Notice('Appended to note.');

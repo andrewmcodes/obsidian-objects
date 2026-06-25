@@ -100,14 +100,16 @@ export class SchemaEditModal extends Modal {
 
     new Setting(contentEl)
       .setName('Filename template')
-      .setDesc('Supports {{title}}, {{date}}, {{type}}.')
+      .setDesc('Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.')
       .addText((text) =>
         text.setValue(this.draft.filenameTemplate).onChange((value) => (this.draft.filenameTemplate = value)),
       );
 
     new Setting(contentEl)
       .setName('Body template')
-      .setDesc('Markdown body. Supports {{title}}, {{date}}, {{type}}.')
+      .setDesc(
+        'Markdown body. Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.',
+      )
       .addTextArea((area) => {
         area.setValue(this.draft.bodyTemplate).onChange((value) => (this.draft.bodyTemplate = value));
         area.inputEl.rows = 5;
@@ -397,7 +399,7 @@ export class SchemaEditModal extends Modal {
     } else if (action.type === 'append-template') {
       new Setting(container)
         .setName('Append template')
-        .setDesc('Supports {{title}}, {{date}}, {{type}}.')
+        .setDesc('Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.')
         .addTextArea((area) => {
           area
             .setPlaceholder('## Follow-up\n')

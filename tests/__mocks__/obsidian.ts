@@ -17,3 +17,6 @@ export function normalizePath(path: string): string {
     .replace(/\/+/g, '/')
     .replace(/^\/|\/$/g, '');
 }
+
+// Obsidian bundles moment and re-exports it; mirror that for date formatting.
+export { default as moment } from 'moment';
