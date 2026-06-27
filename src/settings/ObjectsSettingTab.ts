@@ -4,6 +4,7 @@ import { SchemaEditModal } from './SchemaEditModal';
 import { ImportSchemasModal } from '../modals/ImportSchemasModal';
 import { FolderSuggest } from '../suggest/FolderSuggest';
 import { exportSchemas } from '../services/SchemaIO';
+import { isTemplaterEnabled } from '../services/TemplaterService';
 import { defaultSchemas } from '../utils/defaults';
 
 /**
@@ -64,6 +65,21 @@ export class ObjectsSettingTab extends PluginSettingTab {
           await this.ctx.saveSettings();
         }),
       );
+
+    // Templater is optional; only surface the toggle when it is installed.
+    if (isTemplaterEnabled(this.app)) {
+      /* eslint-disable obsidianmd/ui/sentence-case -- "Templater" is a proper noun (plugin name). */
+      new Setting(containerEl)
+        .setName('Evaluate Templater syntax')
+        .setDesc('After creating a note, run Templater to evaluate any <% … %> commands in it.')
+        .addToggle((toggle) =>
+          toggle.setValue(this.ctx.settings.evaluateTemplater).onChange(async (value) => {
+            this.ctx.settings.evaluateTemplater = value;
+            await this.ctx.saveSettings();
+          }),
+        );
+      /* eslint-enable obsidianmd/ui/sentence-case */
+    }
 
     new Setting(containerEl).setName('Schemas').setHeading();
 

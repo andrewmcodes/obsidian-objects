@@ -10,6 +10,11 @@ export interface ObjectsSettings {
   basesFolder: string;
   /** Whether the created note is opened after creation. */
   openOnCreate: boolean;
+  /**
+   * When the Templater community plugin is installed, evaluate `<% … %>`
+   * commands in a note's content right after it is created. Opt-in.
+   */
+  evaluateTemplater: boolean;
   /** Bumped when default schemas have been seeded, so we only seed once. */
   hasSeededDefaults: boolean;
 }
