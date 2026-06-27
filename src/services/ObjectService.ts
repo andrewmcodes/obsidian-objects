@@ -1,4 +1,4 @@
-import { App, normalizePath, TFile, TFolder } from 'obsidian';
+import { App, moment, normalizePath, TFile, TFolder } from 'obsidian';
 import { Schema } from '../types/schema';
 import { ObjectsSettings } from '../types/settings';
 import { buildFrontmatter, FrontmatterEntry, PropertyValue } from './FrontmatterService';
@@ -9,9 +9,20 @@ import { isoDate } from '../utils/date';
 export type ObjectValues = Record<string, PropertyValue>;
 
 /**
- * Build the full Markdown note content for an object. Pure: no Obsidian
- * dependency, so it can be unit-tested directly. `type` and `created_on` always
- * lead the frontmatter; user-defined properties follow in schema order.
+ * A `{{date:FORMAT}}`/`{{time:FORMAT}}` formatter pinned to a single "now".
+ * Obsidian's `moment` is callable at runtime, but its type only exposes the
+ * (non-callable) module namespace, so it is treated as callable here.
+ */
+export function dateFormatter(): (format: string) => string {
+  const callable = moment as unknown as (input?: string) => { format: (format: string) => string };
+  const now = callable();
+  return (format: string) => now.format(format);
+}
+
+/**
+ * Build the full Markdown note content for an object. `type` and `created_on`
+ * always lead the frontmatter; user-defined properties follow in schema order.
+ * Pass `formatDate` to resolve `{{date:FORMAT}}`/`{{time:FORMAT}}` body tokens.
  */
 export function buildNoteContent(
   schema: Schema,
@@ -19,6 +30,7 @@ export function buildNoteContent(
   values: ObjectValues,
   date: string = isoDate(),
   bodyTemplate?: string,
+  formatDate?: (format: string) => string,
 ): string {
   const entries: FrontmatterEntry[] = [
     { key: 'type', type: 'text', value: schema.id },
@@ -32,6 +44,8 @@ export function buildNoteContent(
     title,
     date,
     type: schema.id,
+    properties: values,
+    formatDate,
   }).trim();
   return body ? `${frontmatter}\n\n${body}\n` : `${frontmatter}\n`;
 }
@@ -58,12 +72,18 @@ export class ObjectService {
     return folder;
   }
 
-  /** Resolve the (un-deduplicated) base note name for a schema + title. */
-  baseName(schema: Schema, title: string): string {
+  /**
+   * Resolve the (un-deduplicated) base note name for a schema + title. Property
+   * values are supplied so filename templates can reference them (e.g.
+   * `{{author}}`) alongside `{{date:FORMAT}}` tokens.
+   */
+  baseName(schema: Schema, title: string, values: ObjectValues = {}): string {
     return resolveFileName(schema.filenameTemplate, {
       title,
       type: schema.id,
       date: isoDate(),
+      properties: values,
+      formatDate: dateFormatter(),
     });
   }
 
@@ -110,7 +130,7 @@ export class ObjectService {
     const folder = this.folderFor(schema);
     await this.ensureFolder(folder);
     const path = normalizePath(notePath(folder, name));
-    const content = buildNoteContent(schema, title, values, undefined, bodyTemplate);
+    const content = buildNoteContent(schema, title, values, undefined, bodyTemplate, dateFormatter());
     const file = await this.app.vault.create(path, content);
     return { file, path };
   }
