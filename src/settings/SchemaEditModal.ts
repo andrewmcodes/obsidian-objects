@@ -16,7 +16,11 @@ import { slugifyId, validateSchema } from '../services/SchemaService';
 function cloneSchema(schema: Schema): Schema {
   return {
     ...schema,
-    properties: schema.properties.map((prop) => ({ ...prop, options: prop.options ? [...prop.options] : undefined })),
+    properties: schema.properties.map((prop) => ({
+      ...prop,
+      options: prop.options ? [...prop.options] : undefined,
+      default: Array.isArray(prop.default) ? [...prop.default] : prop.default,
+    })),
     templates: schema.templates?.map((template) => ({ ...template })),
     actions: schema.actions?.map((action) => ({ ...action })),
   };
@@ -201,6 +205,8 @@ export class SchemaEditModal extends Modal {
         for (const type of PROPERTY_TYPES) drop.addOption(type, type);
         drop.setValue(prop.type).onChange((value) => {
           prop.type = value as PropertyType;
+          // The default is type-specific (e.g. a string vs a list); reset it.
+          prop.default = undefined;
           this.render();
         });
       })
@@ -279,7 +285,72 @@ export class SchemaEditModal extends Modal {
           drop.setValue(prop.linkType ?? '').onChange((value) => (prop.linkType = value || undefined));
         });
     }
+
+    this.renderDefaultField(container, prop);
     setting.settingEl.addClass('objects-property-setting');
+  }
+
+  /** Render the "Default" input for a property, varying by its type. */
+  private renderDefaultField(container: HTMLElement, prop: PropertyDefinition): void {
+    const setting = new Setting(container).setName('Default').setDesc('Pre-filled when creating an object.');
+    const asStringArray = (value: string): string[] | undefined => {
+      const items = value
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item !== '');
+      return items.length ? items : undefined;
+    };
+
+    switch (prop.type) {
+      case 'checkbox':
+        setting.setDesc('Pre-checked when creating an object.');
+        setting.addToggle((toggle) =>
+          toggle.setValue(prop.default === true).onChange((value) => (prop.default = value || undefined)),
+        );
+        break;
+      case 'number':
+        setting.addText((text) => {
+          text.inputEl.type = 'number';
+          text.setValue(typeof prop.default === 'number' ? String(prop.default) : '');
+          text.onChange((value) => {
+            const num = Number(value);
+            prop.default = value === '' || !Number.isFinite(num) ? undefined : num;
+          });
+        });
+        break;
+      case 'select':
+        setting.addDropdown((drop) => {
+          drop.addOption('', '—');
+          for (const option of prop.options ?? []) drop.addOption(option, option);
+          drop.setValue(typeof prop.default === 'string' ? prop.default : '');
+          drop.onChange((value) => (prop.default = value || undefined));
+        });
+        break;
+      case 'multiselect':
+      case 'multilink':
+        setting.setDesc('Comma-separated values, pre-filled when creating an object.');
+        setting.addText((text) =>
+          text
+            .setValue(Array.isArray(prop.default) ? prop.default.join(', ') : '')
+            .onChange((value) => (prop.default = asStringArray(value))),
+        );
+        break;
+      case 'date':
+      case 'datetime':
+        setting.addText((text) => {
+          text.inputEl.type = prop.type === 'date' ? 'date' : 'datetime-local';
+          text.setValue(typeof prop.default === 'string' ? prop.default : '');
+          text.onChange((value) => (prop.default = value === '' ? undefined : value));
+        });
+        break;
+      default:
+        setting.addText((text) =>
+          text
+            .setValue(typeof prop.default === 'string' ? prop.default : '')
+            .onChange((value) => (prop.default = value.trim() === '' ? undefined : value)),
+        );
+        break;
+    }
   }
 
   /** Render the editor row(s) for one custom action. */

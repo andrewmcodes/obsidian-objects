@@ -8,6 +8,7 @@ export const PROPERTY_TYPES = [
   'textarea',
   'number',
   'date',
+  'datetime',
   'checkbox',
   'select',
   'multiselect',
