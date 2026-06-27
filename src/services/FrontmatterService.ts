@@ -12,6 +12,12 @@ export interface FrontmatterEntry {
   key: string;
   type: PropertyType;
   value: PropertyValue;
+  /**
+   * Whether to write the key when its value is blank, emitted as a bare `key:`
+   * so the note ships with the property ready to fill in. Defaults to `true`;
+   * set `false` to drop the entry entirely when blank.
+   */
+  emitWhenBlank?: boolean;
 }
 
 function isBlank(value: PropertyValue): boolean {
@@ -100,13 +106,19 @@ export function serializeValue(type: PropertyType, value: PropertyValue): string
 
 /**
  * Build a complete YAML frontmatter block (including delimiters) from entries.
- * Blank, non-required values are omitted. `type` and `created_on` should be
- * supplied by the caller as the first entries so they always lead the block.
+ * Blank values are emitted as a bare `key:` so the note ships with the property
+ * ready to fill in, unless the entry sets `emitWhenBlank: false`. `type` and
+ * `created_on` should be supplied by the caller as the first entries so they
+ * always lead the block.
  */
 export function buildFrontmatter(entries: FrontmatterEntry[]): string {
   const lines: string[] = ['---'];
   for (const entry of entries) {
-    if (isBlank(entry.value) && entry.type !== 'checkbox') continue;
+    if (isBlank(entry.value) && entry.type !== 'checkbox') {
+      // Keep the key ready to fill in unless the caller opts out for this entry.
+      if (entry.emitWhenBlank !== false) lines.push(`${entry.key}:`);
+      continue;
+    }
     const serialized = serializeValue(entry.type, entry.value);
     // Multiselect lists begin with a newline; everything else is `key: value`.
     if (serialized.startsWith('\n')) {

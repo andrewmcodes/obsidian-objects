@@ -39,9 +39,12 @@ describe('buildNoteContent', () => {
     expect(content).toContain('archived: false');
   });
 
-  it('omits empty optional properties', () => {
+  it('writes blank schema properties as bare keys ready to fill in', () => {
     const content = buildNoteContent(projectSchema, 'Vite Migration', { status: '' }, '2026-06-17');
-    expect(content).not.toContain('status:');
+    // Every schema key is present even with no value supplied.
+    expect(content).toContain('\nstatus:\n');
+    expect(content).toContain('\ntags:\n');
+    expect(content).toContain('\narchived: false\n');
   });
 
   it('honors custom auto-properties, omitting created_on when removed', () => {
