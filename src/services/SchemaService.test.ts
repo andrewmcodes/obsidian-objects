@@ -50,6 +50,10 @@ describe('validateSchema', () => {
     expect(errors.some((e) => e.includes('option'))).toBe(true);
   });
 
+  it('allows multiselect properties without options (free-form list)', () => {
+    expect(validateSchema(schema('x', [{ key: 'tags', type: 'multiselect' }]), [])).toEqual([]);
+  });
+
   it('rejects duplicate ids', () => {
     expect(validateSchema(schema('person'), ['person'])).toContain('Schema id "person" is already in use.');
   });
