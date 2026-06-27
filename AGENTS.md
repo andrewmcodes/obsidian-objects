@@ -48,7 +48,7 @@ Pure logic must not import from `obsidian` so tests run in plain Node. Split any
 
 See [`docs/conventions/CONVENTIONS.md`](docs/conventions/CONVENTIONS.md) for the full set. Highlights:
 
-- **Comments**: document symbols with [TSDoc](https://tsdoc.org/) `/** … */` (`@param`, `@returns`). Inline `//` only for non-obvious logic.
+- **Comments**: document symbols with [TSDoc](https://tsdoc.org/) `/** … */` (`@param`, `@returns`). Inline `//` only for non-obvious logic, only when absolutely necessary.
 - **Commits**: [Conventional Commits](https://www.conventionalcommits.org/), validated by `@andrewmcodes/commitlint-config` via the `commit-msg` hook.
 - **Formatting**: Prettier (`@andrewmcodes/prettier-config`); 2-space indent per `.editorconfig`. **Do not commit build artifacts** (`main.js`, `node_modules`).
 - **TypeScript**: `strict` mode; prefer `async/await`.
