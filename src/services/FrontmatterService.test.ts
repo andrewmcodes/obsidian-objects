@@ -55,12 +55,22 @@ describe('serializeValue', () => {
 });
 
 describe('buildFrontmatter', () => {
-  it('emits delimited YAML and omits blank optional values', () => {
+  it('emits blank values as bare keys by default', () => {
+    const yaml = buildFrontmatter([
+      { key: 'type', type: 'text', value: 'page' },
+      { key: 'aliases', type: 'multiselect', value: [] },
+      { key: 'up', type: 'multilink', value: '' },
+      { key: 'tags', type: 'multiselect', value: undefined },
+    ]);
+    expect(yaml).toBe(['---', 'type: page', 'aliases:', 'up:', 'tags:', '---'].join('\n'));
+  });
+
+  it('drops blank entries opted out with emitWhenBlank: false', () => {
     const yaml = buildFrontmatter([
       { key: 'type', type: 'text', value: 'project' },
       { key: 'created_on', type: 'date', value: '2026-06-17' },
       { key: 'status', type: 'select', value: 'active' },
-      { key: 'note', type: 'text', value: '' },
+      { key: 'note', type: 'text', value: '', emitWhenBlank: false },
     ]);
     expect(yaml).toBe(['---', 'type: project', 'created_on: 2026-06-17', 'status: active', '---'].join('\n'));
   });
