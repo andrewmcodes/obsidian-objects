@@ -31,5 +31,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+          # v4+ excludes dotfiles by default; keep publishing site/.nojekyll.
+          include-hidden-files: true
       - id: deployment
         uses: actions/deploy-pages@v5
