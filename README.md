@@ -24,6 +24,7 @@ Define object types like Person, Project, or Meeting, create structured notes th
 - **Dynamic commands:** every schema gets its own `Create <Schema>` command, plus a generic **Create object** picker.
 - **Promote selection:** turn highlighted text into an object and replace it with a `[[wikilink]]`.
 - **Native Bases:** the **Generate Bases** command writes `.base` files with table and card views that filter on the `type` property. Obsidian renders them, so there's no custom view code.
+- **Template files:** opt in to generate reusable `.tmpl.md` template files for your object types — automatically when a new type is created, and on demand via the **Generate template** command. Each named body template gets its own variant file.
 - **Dashboard:** a sidebar view lists every object grouped by type for quick browsing.
 - **Local-first:** no external services and no proprietary storage. The required `type` and `created_on` properties are filled in for you.
 
@@ -54,6 +55,7 @@ Define object types like Person, Project, or Meeting, create structured notes th
 - **Create _&lt;Schema&gt;_:** create an object of a specific type directly.
 - **Promote selection to object:** convert selected text into a new object.
 - **Generate Bases:** write a `.base` file per schema (table + card views).
+- **Generate template:** pick an object type and write its template file(s) (requires **Create templates** enabled).
 - **Open dashboard:** open the objects dashboard in the sidebar.
 - **Export schemas to clipboard** / **Import schemas:** share schemas as JSON.
 - **Open settings:** open the Objects settings tab.
@@ -63,6 +65,7 @@ Define object types like Person, Project, or Meeting, create structured notes th
 The **Objects** settings tab lets you:
 
 - Configure the default folder, Bases folder, and whether notes open on create.
+- Enable **Create templates** to generate template files for object types, then set the templates folder and a naming convention (e.g. `{{id}}.tmpl`).
 - Edit the automatic properties added to every new note (seeded with `created_on: {{date}}`) — change them, add your own, or remove them.
 - Add, edit, delete, and reorder schemas.
 - Edit each schema's id, label, folder, filename template, body template, and properties (including options for `select`/`multiselect`).

@@ -27,6 +27,15 @@ export interface ObjectsSettings {
   /** Whether the created note is opened after creation. */
   openOnCreate: boolean;
   /**
+   * When enabled, generate Obsidian template files for object types — both
+   * automatically when a new type is created and on demand via a command.
+   */
+  createTemplates: boolean;
+  /** Folder where generated template files are written (e.g. `util/templates`). */
+  templatesFolder: string;
+  /** Naming pattern for generated template files, e.g. `{{id}}.tmpl`. */
+  templateNaming: string;
+  /**
    * When the Templater community plugin is installed, evaluate `<% … %>`
    * commands in a note's content right after it is created. Opt-in.
    */

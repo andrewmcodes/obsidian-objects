@@ -3,6 +3,7 @@ import { ObjectsContext } from '../types/context';
 import { openCreateFlow } from '../modals/ObjectTypeModal';
 import { CreateObjectModal } from '../modals/CreateObjectModal';
 import { ImportSchemasModal } from '../modals/ImportSchemasModal';
+import { GenerateTemplateModal } from '../modals/GenerateTemplateModal';
 import { exportSchemas } from '../services/SchemaIO';
 import { openPluginSettings } from '../utils/settings-ui';
 import { PLUGIN_ID } from '../utils/constants';
@@ -38,6 +39,22 @@ export function registerStaticCommands(plugin: Plugin, ctx: ObjectsContext): voi
     // eslint-disable-next-line obsidianmd/ui/sentence-case
     name: 'Generate Bases',
     callback: () => void generateBases(ctx),
+  });
+
+  plugin.addCommand({
+    id: 'generate-object-template',
+    name: 'Generate template',
+    callback: () => {
+      if (!ctx.settings.createTemplates) {
+        new Notice('Enable template generation in settings first.');
+        return;
+      }
+      if (ctx.schemas.all().length === 0) {
+        new Notice('No object types to generate templates for.');
+        return;
+      }
+      new GenerateTemplateModal(ctx).open();
+    },
   });
 
   plugin.addCommand({

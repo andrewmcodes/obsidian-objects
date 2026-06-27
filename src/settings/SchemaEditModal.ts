@@ -552,8 +552,22 @@ export class SchemaEditModal extends Modal {
     else this.ctx.schemas.update(this.draft.id, this.draft);
     await this.ctx.saveSettings();
     this.ctx.refreshCommands();
+    // Generate template file(s) for a brand-new type. No-ops unless the
+    // "Create templates" setting is enabled.
+    if (this.isNew) await this.generateTemplates();
     await this.onSave();
     this.close();
+  }
+
+  /** Generate template file(s) for the newly created type, reporting the result. */
+  private async generateTemplates(): Promise<void> {
+    try {
+      const count = await this.ctx.templateFiles.generateFor(this.draft);
+      if (count > 0) new Notice(`Generated ${count} template file${count === 1 ? '' : 's'}.`);
+    } catch (error) {
+      console.error('Objects: failed to generate template files', error);
+      new Notice('Failed to generate template files. See console for details.');
+    }
   }
 
   onClose(): void {

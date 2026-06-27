@@ -105,6 +105,9 @@ export const DEFAULT_SETTINGS: ObjectsSettings = {
   basesFolder: 'Bases',
   autoProperties: DEFAULT_AUTO_PROPERTIES.map((property) => ({ ...property })),
   openOnCreate: true,
+  createTemplates: false,
+  templatesFolder: 'Templates',
+  templateNaming: '{{id}}.tmpl',
   evaluateTemplater: false,
   hasSeededDefaults: false,
 };
