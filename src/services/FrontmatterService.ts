@@ -36,6 +36,17 @@ function quote(value: string): string {
   return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
+/**
+ * Normalize a date-time string to Obsidian's native `YYYY-MM-DDTHH:mm:ss`
+ * format. The `datetime-local` picker omits seconds (`YYYY-MM-DDTHH:mm`), so
+ * append `:00` to match what Obsidian writes. Anything that isn't a
+ * minute-precision date-time is left untouched.
+ */
+function normalizeDateTime(value: string): string {
+  const trimmed = value.trim();
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(trimmed) ? `${trimmed}:00` : trimmed;
+}
+
 function serializeScalar(value: string): string {
   return needsQuoting(value) ? quote(value) : value;
 }
@@ -70,9 +81,13 @@ export function serializeValue(type: PropertyType, value: PropertyValue): string
       return link === '' ? '' : quote(link);
     }
     case 'date':
-      // Date strings (e.g. `2026-06-17`) are emitted bare so Obsidian
-      // treats them as native date properties rather than text.
+      // Date strings (e.g. `2026-06-17`) are emitted bare so Obsidian treats
+      // them as native date properties rather than text.
       return String(value).trim();
+    case 'datetime':
+      // Emitted bare and normalized to Obsidian's `YYYY-MM-DDTHH:mm:ss` so it
+      // reads as a native date-time property.
+      return normalizeDateTime(String(value));
     case 'select':
     case 'text':
     case 'textarea':

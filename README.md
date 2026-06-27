@@ -29,12 +29,15 @@ Define object types like Person, Project, or Meeting, create structured notes th
 
 ## Property types
 
-`text`, `textarea`, `number`, `date`, `checkbox`, `select`, `multiselect`, `link`, `multilink` (wikilink relationships), `email`, `url`.
+`text`, `textarea`, `number`, `date`, `datetime`, `checkbox`, `select`, `multiselect`, `link`, `multilink` (wikilink relationships), `email`, `url`.
 
 ## Beyond the basics
 
 - **Relationships:** `link` and `multilink` properties store `[[wikilinks]]`, and the note autocomplete can be scoped to one object type (so a meeting's attendees only suggest people).
+- **Template tokens:** filename and body templates support `{{title}}`, `{{type}}`, `{{date}}`, moment-formatted `{{date:FORMAT}}` / `{{time:FORMAT}}` (e.g. `{{date:YYYYMMDD}}`, ISO week `{{date:YYYY-[W]WW}}`), and `{{property}}` values such as `{{author}}`. With the Templater plugin installed, an opt-in setting also evaluates `<% … %>` commands in new notes.
 - **Multiple templates:** a schema can define several named body templates to pick from when you create an object.
+- **Variants:** a schema can define named presets that override property defaults (and optionally the body), chosen from a dropdown when you create an object.
+- **Default values:** any property can carry a default that pre-fills the creation modal (and can be overridden there).
 - **Validation rules:** properties support regex patterns, number min/max, and email/URL format checks, enforced as you create.
 - **Object actions:** a schema can attach custom commands to its notes, such as setting a property, appending a template section, or creating a linked object.
 - **Schema sharing:** export your schemas to JSON and import them into another vault.
@@ -60,12 +63,13 @@ Define object types like Person, Project, or Meeting, create structured notes th
 The **Objects** settings tab lets you:
 
 - Configure the default folder, Bases folder, and whether notes open on create.
+- Edit the automatic properties added to every new note (seeded with `created_on: {{date}}`) — change them, add your own, or remove them.
 - Add, edit, delete, and reorder schemas.
 - Edit each schema's id, label, folder, filename template, body template, and properties (including options for `select`/`multiselect`).
 
 ## Data model
 
-Every object note is a standard Markdown file. Required Properties are always present:
+Every object note is a standard Markdown file. The `type` Property is always present, followed by the automatic properties (`created_on` by default, configurable in settings) and then the schema's own properties:
 
 ```markdown
 ---

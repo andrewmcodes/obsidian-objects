@@ -73,7 +73,9 @@ export function validateSchema(schema: Schema, otherIds: string[]): string[] {
     }
     if (keys.has(prop.key)) errors.push(`Duplicate property key "${prop.key}".`);
     keys.add(prop.key);
-    if ((prop.type === 'select' || prop.type === 'multiselect') && !(prop.options && prop.options.length)) {
+    // `select` renders a dropdown, so it needs a fixed vocabulary. `multiselect`
+    // may be optionless — it then acts as a free-form list (e.g. tags, aliases).
+    if (prop.type === 'select' && !(prop.options && prop.options.length)) {
       errors.push(`Property "${prop.key}" needs at least one option.`);
     }
   }

@@ -7,17 +7,30 @@ import {
   PropertyDefinition,
   PropertyType,
   Schema,
+  SchemaVariant,
 } from '../types/schema';
 import { ObjectsContext } from '../types/context';
 import { FolderSuggest } from '../suggest/FolderSuggest';
-import { slugifyId, validateSchema } from '../services/SchemaService';
+import { propertyLabel, slugifyId, validateSchema } from '../services/SchemaService';
 
 /** Deep-clone a schema so edits can be cancelled without side effects. */
 function cloneSchema(schema: Schema): Schema {
   return {
     ...schema,
-    properties: schema.properties.map((prop) => ({ ...prop, options: prop.options ? [...prop.options] : undefined })),
+    properties: schema.properties.map((prop) => ({
+      ...prop,
+      options: prop.options ? [...prop.options] : undefined,
+      default: Array.isArray(prop.default) ? [...prop.default] : prop.default,
+    })),
     templates: schema.templates?.map((template) => ({ ...template })),
+    variants: schema.variants?.map((variant) => ({
+      ...variant,
+      defaults: variant.defaults
+        ? Object.fromEntries(
+            Object.entries(variant.defaults).map(([key, value]) => [key, Array.isArray(value) ? [...value] : value]),
+          )
+        : undefined,
+    })),
     actions: schema.actions?.map((action) => ({ ...action })),
   };
 }
@@ -96,14 +109,16 @@ export class SchemaEditModal extends Modal {
 
     new Setting(contentEl)
       .setName('Filename template')
-      .setDesc('Supports {{title}}, {{date}}, {{type}}.')
+      .setDesc('Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.')
       .addText((text) =>
         text.setValue(this.draft.filenameTemplate).onChange((value) => (this.draft.filenameTemplate = value)),
       );
 
     new Setting(contentEl)
       .setName('Body template')
-      .setDesc('Markdown body. Supports {{title}}, {{date}}, {{type}}.')
+      .setDesc(
+        'Markdown body. Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.',
+      )
       .addTextArea((area) => {
         area.setValue(this.draft.bodyTemplate).onChange((value) => (this.draft.bodyTemplate = value));
         area.inputEl.rows = 5;
@@ -157,6 +172,20 @@ export class SchemaEditModal extends Modal {
       }),
     );
 
+    contentEl.createEl('h3', { text: 'Variants' });
+    contentEl.createEl('p', {
+      text: 'Optional named presets: default overrides (and an optional body) chosen when creating an object.',
+      cls: 'setting-item-description',
+    });
+    const variants = (this.draft.variants ??= []);
+    variants.forEach((variant, index) => this.renderVariant(contentEl, variant, index));
+    new Setting(contentEl).addButton((button) =>
+      button.setButtonText('Add variant').onClick(() => {
+        variants.push({ name: '' });
+        this.render();
+      }),
+    );
+
     contentEl.createEl('h3', { text: 'Actions' });
     contentEl.createEl('p', {
       text: 'Optional commands available on notes of this type.',
@@ -201,6 +230,8 @@ export class SchemaEditModal extends Modal {
         for (const type of PROPERTY_TYPES) drop.addOption(type, type);
         drop.setValue(prop.type).onChange((value) => {
           prop.type = value as PropertyType;
+          // The default is type-specific (e.g. a string vs a list); reset it.
+          prop.default = undefined;
           this.render();
         });
       })
@@ -279,7 +310,139 @@ export class SchemaEditModal extends Modal {
           drop.setValue(prop.linkType ?? '').onChange((value) => (prop.linkType = value || undefined));
         });
     }
+
+    this.renderDefaultField(container, prop);
     setting.settingEl.addClass('objects-property-setting');
+  }
+
+  /** Render the "Default" input for a property, writing to `prop.default`. */
+  private renderDefaultField(container: HTMLElement, prop: PropertyDefinition): void {
+    this.renderValueField(
+      container,
+      prop,
+      () => prop.default,
+      (value) => (prop.default = value),
+      {
+        name: 'Default',
+        desc: 'Pre-filled when creating an object.',
+        checkboxDesc: 'Pre-checked when creating an object.',
+      },
+    );
+  }
+
+  /**
+   * Render a type-appropriate value input for a property, reading via `current`
+   * and writing via `update`. Shared by the schema default and per-variant
+   * overrides; `update(undefined)` clears the value.
+   */
+  private renderValueField(
+    container: HTMLElement,
+    prop: PropertyDefinition,
+    current: () => PropertyDefinition['default'],
+    update: (value: PropertyDefinition['default']) => void,
+    opts: { name: string; desc: string; checkboxDesc?: string },
+  ): void {
+    const setting = new Setting(container).setName(opts.name).setDesc(opts.desc);
+    const value = current();
+    const asStringArray = (raw: string): string[] | undefined => {
+      const items = raw
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item !== '');
+      return items.length ? items : undefined;
+    };
+
+    switch (prop.type) {
+      case 'checkbox':
+        if (opts.checkboxDesc) setting.setDesc(opts.checkboxDesc);
+        setting.addToggle((toggle) => toggle.setValue(value === true).onChange((v) => update(v || undefined)));
+        break;
+      case 'number':
+        setting.addText((text) => {
+          text.inputEl.type = 'number';
+          text.setValue(typeof value === 'number' ? String(value) : '');
+          text.onChange((raw) => {
+            const num = Number(raw);
+            update(raw === '' || !Number.isFinite(num) ? undefined : num);
+          });
+        });
+        break;
+      case 'select':
+        setting.addDropdown((drop) => {
+          drop.addOption('', '—');
+          for (const option of prop.options ?? []) drop.addOption(option, option);
+          drop.setValue(typeof value === 'string' ? value : '');
+          drop.onChange((v) => update(v || undefined));
+        });
+        break;
+      case 'multiselect':
+      case 'multilink':
+        setting.setDesc(`${opts.desc} Comma-separated.`);
+        setting.addText((text) =>
+          text.setValue(Array.isArray(value) ? value.join(', ') : '').onChange((raw) => update(asStringArray(raw))),
+        );
+        break;
+      case 'date':
+      case 'datetime':
+        setting.addText((text) => {
+          text.inputEl.type = prop.type === 'date' ? 'date' : 'datetime-local';
+          text.setValue(typeof value === 'string' ? value : '');
+          text.onChange((raw) => update(raw === '' ? undefined : raw));
+        });
+        break;
+      default:
+        setting.addText((text) =>
+          text
+            .setValue(typeof value === 'string' ? value : '')
+            .onChange((raw) => update(raw.trim() === '' ? undefined : raw)),
+        );
+        break;
+    }
+  }
+
+  /** Render the editor row(s) for one variant: name, body, and per-property overrides. */
+  private renderVariant(container: HTMLElement, variant: SchemaVariant, index: number): void {
+    new Setting(container)
+      .setClass('objects-property-row')
+      .addText((text) =>
+        text
+          .setPlaceholder('Variant name')
+          .setValue(variant.name)
+          .onChange((value) => (variant.name = value)),
+      )
+      .addTextArea((area) => {
+        area
+          .setPlaceholder('Body (optional; falls back to the default body)')
+          .setValue(variant.body ?? '')
+          .onChange((value) => (variant.body = value.trim() === '' ? undefined : value));
+        area.inputEl.rows = 3;
+      })
+      .addExtraButton((button) =>
+        button
+          .setIcon('trash')
+          .setTooltip('Remove variant')
+          .onClick(() => {
+            this.draft.variants?.splice(index, 1);
+            this.render();
+          }),
+      );
+
+    for (const prop of this.draft.properties) {
+      if (!prop.key.trim()) continue;
+      this.renderValueField(
+        container,
+        prop,
+        () => variant.defaults?.[prop.key],
+        (value) => {
+          if (value === undefined) {
+            if (variant.defaults) delete variant.defaults[prop.key];
+          } else {
+            (variant.defaults ??= {})[prop.key] = value;
+          }
+        },
+        { name: propertyLabel(prop), desc: `Override (blank uses the schema default).` },
+      );
+    }
   }
 
   /** Render the editor row(s) for one custom action. */
@@ -326,7 +489,7 @@ export class SchemaEditModal extends Modal {
     } else if (action.type === 'append-template') {
       new Setting(container)
         .setName('Append template')
-        .setDesc('Supports {{title}}, {{date}}, {{type}}.')
+        .setDesc('Supports {{title}}, {{type}}, {{date}}, {{date:FORMAT}}, {{time:FORMAT}}, and {{property}}.')
         .addTextArea((area) => {
           area
             .setPlaceholder('## Follow-up\n')
@@ -350,6 +513,16 @@ export class SchemaEditModal extends Modal {
     if (this.draft.templates) {
       this.draft.templates = this.draft.templates.filter((t) => t.name.trim() !== '' && t.body.trim() !== '');
       if (this.draft.templates.length === 0) delete this.draft.templates;
+    }
+    // Drop unnamed variants and prune empty default maps / blank bodies.
+    if (this.draft.variants) {
+      this.draft.variants = this.draft.variants.filter((v) => v.name.trim() !== '');
+      for (const variant of this.draft.variants) {
+        variant.name = variant.name.trim();
+        if (variant.defaults && Object.keys(variant.defaults).length === 0) delete variant.defaults;
+        if (variant.body !== undefined && variant.body.trim() === '') delete variant.body;
+      }
+      if (this.draft.variants.length === 0) delete this.draft.variants;
     }
     // Drop unnamed actions and assign each a stable id derived from its name.
     if (this.draft.actions) {

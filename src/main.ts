@@ -72,6 +72,8 @@ export default class ObjectsPlugin extends Plugin implements ObjectsContext {
   async loadSettings(): Promise<void> {
     const loaded = (await this.loadData()) as Partial<ObjectsSettings> | null;
     this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded);
+    // Clone auto-properties so editing them never mutates DEFAULT_SETTINGS.
+    this.settings.autoProperties = this.settings.autoProperties.map((property) => ({ ...property }));
 
     // Seed default schemas exactly once, on first run.
     if (!this.settings.hasSeededDefaults && this.settings.schemas.length === 0) {
