@@ -28,8 +28,10 @@ jobs:
           mkdir -p site/assets
           cp assets/social-image.png site/assets/social-image.png
       - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+          # v4+ excludes dotfiles by default; keep publishing site/.nojekyll.
+          include-hidden-files: true
       - id: deployment
         uses: actions/deploy-pages@v5
