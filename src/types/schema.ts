@@ -8,6 +8,7 @@ export const PROPERTY_TYPES = [
   'textarea',
   'number',
   'date',
+  'datetime',
   'checkbox',
   'select',
   'multiselect',
@@ -52,6 +53,20 @@ export interface NamedTemplate {
   body: string;
 }
 
+/**
+ * A named preset for a schema, chosen in the create modal. A variant overrides
+ * property defaults and may supply its own body template (e.g. a "Recurring
+ * Meeting" variant of "Meeting" that presets `status: in_progress`).
+ */
+export interface SchemaVariant {
+  /** Display name shown in the create modal's variant picker. */
+  name: string;
+  /** Property default overrides applied when this variant is chosen. */
+  defaults?: Record<string, string | number | boolean | string[]>;
+  /** Optional body template; falls back to the schema's default body. */
+  body?: string;
+}
+
 export const ACTION_TYPES = ['set-property', 'append-template', 'create-linked'] as const;
 
 export type ActionType = (typeof ACTION_TYPES)[number];
@@ -91,6 +106,8 @@ export interface Schema {
   bodyTemplate: string;
   /** Optional additional named templates the user can pick when creating. */
   templates?: NamedTemplate[];
+  /** Optional named presets (default overrides + body) chosen when creating. */
+  variants?: SchemaVariant[];
   /** Optional custom actions (commands) available on notes of this type. */
   actions?: ObjectAction[];
 }

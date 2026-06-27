@@ -38,6 +38,7 @@
     "eslint-plugin-obsidianmd": "^0.3.0",
     "globals": "^17.6.0",
     "jiti": "^2.7.0",
+    "moment": "2.29.4",
     "obsidian": "latest",
     "prettier": "^3.8.4",
     "typescript": "^6.0.3",
