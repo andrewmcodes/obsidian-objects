@@ -10,7 +10,7 @@ description = "Install dependencies with pnpm (via Corepack)"
 run = "corepack pnpm install"
 
 [tasks.dev]
-description = "Watch build. Set OBSIDIAN_VAULT to build into a vault for hot reload."
+description = "Watch build. Set OBSIDIAN_VAULT_PATH to build into a vault for hot reload."
 run = "corepack pnpm run dev"
 
 [tasks.build]
@@ -38,20 +38,20 @@ description = "Install git hooks (commit-msg → commitlint)"
 run = "git config core.hooksPath .githooks && chmod +x .githooks/*"
 
 # Build, then copy the release artifacts into a vault's plugin folder.
-# Set OBSIDIAN_VAULT to your vault path, e.g.
-#   OBSIDIAN_VAULT="$HOME/Notes" mise run install-plugin
+# Set OBSIDIAN_VAULT_PATH to your vault path, e.g.
+#   OBSIDIAN_VAULT_PATH="$HOME/Notes" mise run install-plugin
 # A leading ~ is expanded. Quote the value so the shell doesn't expand it too
 # early (the task handles ~ itself).
 [tasks.install-plugin]
-description = "Build and copy main.js/manifest.json/styles.css into $OBSIDIAN_VAULT"
+description = "Build and copy main.js/manifest.json/styles.css into $OBSIDIAN_VAULT_PATH"
 depends = ["build"]
 run = """
-if [ -z "$OBSIDIAN_VAULT" ]; then
-  echo "Set OBSIDIAN_VAULT to your vault path, e.g. OBSIDIAN_VAULT=\\"$HOME/Notes\\"" >&2
+if [ -z "$OBSIDIAN_VAULT_PATH" ]; then
+  echo "Set OBSIDIAN_VAULT_PATH to your vault path, e.g. OBSIDIAN_VAULT_PATH=\\"$HOME/Notes\\"" >&2
   exit 1
 fi
 # Expand a leading ~ (it is not expanded inside quotes by the shell).
-vault="$OBSIDIAN_VAULT"
+vault="$OBSIDIAN_VAULT_PATH"
 case "$vault" in
   "~") vault="$HOME" ;;
   "~/"*) vault="$HOME/${vault#~/}" ;;
@@ -60,7 +60,7 @@ esac
 # the repo by accident.
 case "$vault" in
   /*) ;;
-  *) echo "OBSIDIAN_VAULT must be an absolute path (got: $OBSIDIAN_VAULT)" >&2; exit 1 ;;
+  *) echo "OBSIDIAN_VAULT_PATH must be an absolute path (got: $OBSIDIAN_VAULT_PATH)" >&2; exit 1 ;;
 esac
 if [ ! -d "$vault" ]; then
   echo "Vault folder does not exist: $vault" >&2

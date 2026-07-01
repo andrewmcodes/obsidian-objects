@@ -103,7 +103,7 @@ mise run hooks     # install the commit-msg git hook
 Requires **Obsidian 1.13+**. To install into a local vault, copy `main.js`, `manifest.json`, and `styles.css` into `<Vault>/.obsidian/plugins/obsidian-objects/`. The convenience task below builds and copies them for you (quote the path; a leading `~` is expanded):
 
 ```bash
-OBSIDIAN_VAULT="~/git/andrewmcodes/digital-brain" mise run install-plugin
+OBSIDIAN_VAULT_PATH="/Users/andrew.mason/git/andrewmcodes/digital-brain" mise run install-plugin
 ```
 
 Then, in Obsidian, enable **Settings → Community plugins** (turn off Restricted mode if asked), reload the app, and turn on **Objects** under **Installed plugins**. A manually-installed plugin shows up there, not in the **Browse** catalog, which only lists submitted community plugins.
@@ -120,7 +120,7 @@ Then, in Obsidian, enable **Settings → Community plugins** (turn off Restricte
 - **Manual testing** in a real vault. The UI (modals, dashboard, commands, generated Bases) gets exercised by hand in Obsidian. For a live loop, install the [Hot Reload](https://github.com/pjeby/hot-reload) plugin and point the build at your vault so it rebuilds and reloads on every save:
 
   ```bash
-  OBSIDIAN_VAULT="/path/to/your/vault" mise run dev
+  OBSIDIAN_VAULT_PATH="/path/to/your/vault" mise run dev
   ```
 
   Otherwise run `mise run install-plugin` and reload Obsidian after each build.
