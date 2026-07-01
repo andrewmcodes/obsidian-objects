@@ -67,6 +67,51 @@ export class ObjectsSettingTab extends PluginSettingTab {
         }),
       );
 
+    new Setting(containerEl)
+      .setName('Create templates')
+      .setDesc(
+        'Generate template files for object types — automatically for new types and on demand from the command palette.',
+      )
+      .addToggle((toggle) =>
+        toggle.setValue(this.ctx.settings.createTemplates).onChange(async (value) => {
+          this.ctx.settings.createTemplates = value;
+          await this.ctx.saveSettings();
+          // Re-render to reveal or hide the dependent inputs below.
+          this.render();
+        }),
+      );
+
+    if (this.ctx.settings.createTemplates) {
+      new Setting(containerEl)
+        .setName('Templates folder')
+        .setDesc('Where generated template files are written.')
+        .addText((text) => {
+          new FolderSuggest(this.app, text.inputEl);
+          text
+            .setPlaceholder('Templates folder')
+            .setValue(this.ctx.settings.templatesFolder)
+            .onChange(async (value) => {
+              this.ctx.settings.templatesFolder = value.trim();
+              await this.ctx.saveSettings();
+            });
+        });
+
+      new Setting(containerEl)
+        .setName('Naming convention')
+        .setDesc(
+          'Pattern for template filenames; {{id}} is the object type id. Variant files append the slugified variant name.',
+        )
+        .addText((text) =>
+          text
+            .setPlaceholder('{{id}}.tmpl')
+            .setValue(this.ctx.settings.templateNaming)
+            .onChange(async (value) => {
+              this.ctx.settings.templateNaming = value.trim();
+              await this.ctx.saveSettings();
+            }),
+        );
+    }
+
     // Templater is optional; only surface the toggle when it is installed.
     if (isTemplaterEnabled(this.app)) {
       /* eslint-disable obsidianmd/ui/sentence-case -- "Templater" is a proper noun (plugin name). */

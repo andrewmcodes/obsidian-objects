@@ -12,10 +12,10 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === 'production';
 
-// In dev, if OBSIDIAN_VAULT points at a vault, build straight into its plugin
+// In dev, if OBSIDIAN_VAULT_PATH points at a vault, build straight into its plugin
 // folder and emit a `.hotreload` marker so the Hot Reload plugin reloads us
 // on every rebuild. Otherwise (and always in prod) write to the repo root.
-const vault = process.env.OBSIDIAN_VAULT;
+const vault = process.env.OBSIDIAN_VAULT_PATH;
 const outDir = !prod && vault ? path.join(vault, '.obsidian/plugins/obsidian-objects') : '.';
 if (outDir !== '.') mkdirSync(outDir, { recursive: true });
 

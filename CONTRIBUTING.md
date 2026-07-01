@@ -21,7 +21,7 @@ mise run dev          # esbuild watch build (main.js at repo root)
 For a live loop against a real vault, install the [Hot Reload](https://github.com/pjeby/hot-reload) plugin and point the build at your vault:
 
 ```bash
-OBSIDIAN_VAULT="/path/to/your/vault" mise run dev
+OBSIDIAN_VAULT_PATH="/path/to/your/vault" mise run dev
 ```
 
 This writes `main.js`, `manifest.json`, and `styles.css` into `<vault>/.obsidian/plugins/obsidian-objects/` and touches `.hotreload` on every rebuild. To do a one-off install instead, use `mise run install-plugin`.

@@ -3,6 +3,7 @@ import { ObjectsSettings } from './settings';
 import { ObjectService } from '../services/ObjectService';
 import { SchemaService } from '../services/SchemaService';
 import { BasesService } from '../services/BasesService';
+import { TemplateFileService } from '../services/TemplateFileService';
 // Type-only to avoid a runtime import cycle (the action service imports modals
 // that import this context).
 import type { ObjectActionService } from '../services/ObjectActionService';
@@ -16,6 +17,7 @@ export interface ObjectsContext {
   objects: ObjectService;
   schemas: SchemaService;
   bases: BasesService;
+  templateFiles: TemplateFileService;
   actions: ObjectActionService;
   saveSettings(): Promise<void>;
   /** Re-register dynamic `Create <Schema>` commands after schema changes. */
