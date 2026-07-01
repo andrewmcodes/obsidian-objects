@@ -34,7 +34,20 @@ export class GenerateTemplateModal extends Modal {
       return;
     }
 
-    contentEl.createEl('p', { text: 'Choose an object type:' });
+    new Setting(contentEl)
+      .setName('All object types')
+      .setDesc(`Generate template files for all ${schemas.length} object types.`)
+      .addButton((button) =>
+        button
+          .setButtonText('Generate all')
+          .setCta()
+          .onClick(async () => {
+            this.close();
+            await this.generateAll();
+          }),
+      );
+
+    contentEl.createEl('p', { text: 'Or choose an object type:' });
     for (const schema of schemas) {
       new Setting(contentEl).setName(schema.label).addButton((button) =>
         button
@@ -54,6 +67,17 @@ export class GenerateTemplateModal extends Modal {
     if (!schema) return;
     try {
       const count = await this.ctx.templateFiles.generateFor(schema);
+      new Notice(`Generated ${count} template file${count === 1 ? '' : 's'}.`);
+    } catch (error) {
+      console.error('Objects: failed to generate template files', error);
+      new Notice('Failed to generate template files. See console for details.');
+    }
+  }
+
+  /** Generate template files for every schema and report the total written. */
+  private async generateAll(): Promise<void> {
+    try {
+      const count = await this.ctx.templateFiles.generate(this.ctx.schemas.all());
       new Notice(`Generated ${count} template file${count === 1 ? '' : 's'}.`);
     } catch (error) {
       console.error('Objects: failed to generate template files', error);
