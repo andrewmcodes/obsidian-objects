@@ -17,6 +17,22 @@ Define object types like Person, Project, or Meeting, create structured notes th
 
 📖 **[Documentation site →](https://andrewmcodes.github.io/obsidian-objects/)**
 
+## Installation
+
+This plugin requires Obsidian v1.13.0 or later to work. Untested on other versions.
+
+### Install via BRAT
+
+1. Install the [BRAT plugin](obsidian://show-plugin?id=obsidian42-brat) under Community Plugins
+2. Open BRAT settings and click "Add beta plugin"
+3. Enter the URL of this repository: `https://github.com/andrewmcodes/obsidian-objects`
+4. Under "Select a version", choose the Latest version
+5. Click "Add plugin"
+
+### Install locally
+
+Clone the repo to `.obsidian/plugins` in your Obsidian vault.
+
 ## Features
 
 - **Schema-driven objects:** each type defines its folder, filename template, properties, body templates, and validation rules.
