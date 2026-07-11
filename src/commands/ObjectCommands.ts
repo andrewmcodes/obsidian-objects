@@ -35,8 +35,6 @@ export function registerStaticCommands(plugin: Plugin, ctx: ObjectsContext): voi
 
   plugin.addCommand({
     id: 'generate-bases',
-    // "Bases" is Obsidian's proper feature name, so it stays capitalized.
-    // eslint-disable-next-line obsidianmd/ui/sentence-case
     name: 'Generate Bases',
     callback: () => void generateBases(ctx),
   });

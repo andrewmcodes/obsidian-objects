@@ -9,6 +9,12 @@ updates:
       dev-dependencies:
         patterns:
           - '*'
+    ignore:
+      # typescript-eslint only supports TypeScript <6.1.0 (peer dependency); TypeScript 7 is the
+      # rewritten native compiler and breaks the parser. Hold on 6.x until typescript-eslint ships
+      # TS 7 support, then remove this entry. See PR #25.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

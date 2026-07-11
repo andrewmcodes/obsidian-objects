@@ -1,9 +1,9 @@
-import tseslint from 'typescript-eslint';
+/// <reference types="node" />
 import obsidianmd from 'eslint-plugin-obsidianmd';
 import globals from 'globals';
-import { globalIgnores } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
-export default tseslint.config(
+export default defineConfig(
   globalIgnores([
     'node_modules',
     'dist',
@@ -33,4 +33,17 @@ export default tseslint.config(
     },
   },
   ...obsidianmd.configs.recommended,
+  {
+    rules: {
+      // "Bases" and "Templater" are Obsidian feature/plugin names that keep their canonical casing.
+      'obsidianmd/ui/sentence-case': ['warn', { enforceCamelCaseLower: true, brands: ['Bases', 'Templater'] }],
+    },
+  },
+  {
+    // Test stubs cast plain objects to Obsidian types; the real vault types are unavailable in unit tests.
+    files: ['**/*.test.ts'],
+    rules: {
+      'obsidianmd/no-tfile-tfolder-cast': 'off',
+    },
+  },
 );
