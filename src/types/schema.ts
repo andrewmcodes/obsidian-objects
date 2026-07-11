@@ -110,4 +110,9 @@ export interface Schema {
   variants?: SchemaVariant[];
   /** Optional custom actions (commands) available on notes of this type. */
   actions?: ObjectAction[];
+  /**
+   * Frontmatter keys of global automatic properties to skip for this schema.
+   * Absent/empty means all enabled global auto-properties apply.
+   */
+  disabledAutoProperties?: string[];
 }

@@ -57,6 +57,29 @@ describe('buildNoteContent', () => {
     expect(content).not.toContain('created_on');
   });
 
+  it('skips auto-properties the schema disables, keeping the rest', () => {
+    const schema: Schema = { ...projectSchema, disabledAutoProperties: ['created_on'] };
+    const content = buildNoteContent(schema, 'Vite Migration', {}, '2026-06-17', undefined, undefined, [
+      { key: 'created_on', type: 'date', value: '{{date}}' },
+      { key: 'author', type: 'text', value: 'Andrew' },
+    ]);
+    expect(content).not.toContain('created_on');
+    expect(content).toContain('author: Andrew');
+  });
+
+  it('applies auto-properties for a schema that does not disable them', () => {
+    const content = buildNoteContent(projectSchema, 'Vite Migration', {}, '2026-06-17', undefined, undefined, [
+      { key: 'created_on', type: 'date', value: '{{date}}' },
+    ]);
+    expect(content).toContain('created_on: 2026-06-17');
+  });
+
+  it('ignores a disabled key that is not a configured auto-property', () => {
+    const schema: Schema = { ...projectSchema, disabledAutoProperties: ['nonexistent'] };
+    const content = buildNoteContent(schema, 'Vite Migration', {}, '2026-06-17');
+    expect(content).toContain('created_on: 2026-06-17');
+  });
+
   it('drops an auto-property whose key a schema property already owns', () => {
     const content = buildNoteContent(
       projectSchema,

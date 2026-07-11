@@ -32,6 +32,7 @@ function cloneSchema(schema: Schema): Schema {
         : undefined,
     })),
     actions: schema.actions?.map((action) => ({ ...action })),
+    disabledAutoProperties: schema.disabledAutoProperties ? [...schema.disabledAutoProperties] : undefined,
   };
 }
 
@@ -134,6 +135,8 @@ export class SchemaEditModal extends Modal {
       }),
     );
 
+    this.renderAutoProperties(contentEl);
+
     contentEl.createEl('h3', { text: 'Additional templates' });
     contentEl.createEl('p', {
       text: 'Optional named body templates the user can pick when creating an object.',
@@ -208,6 +211,38 @@ export class SchemaEditModal extends Modal {
           .onClick(() => void this.save()),
       )
       .addButton((button) => button.setButtonText('Cancel').onClick(() => this.close()));
+  }
+
+  /**
+   * Render a toggle per global automatic property, letting this schema opt out
+   * of any of them. Toggling off records the key in `disabledAutoProperties`.
+   */
+  private renderAutoProperties(container: HTMLElement): void {
+    container.createEl('h3', { text: 'Automatic properties' });
+    container.createEl('p', {
+      text: 'Global properties added to every new note. Turn one off to skip it for this type.',
+      cls: 'setting-item-description',
+    });
+    const autoProperties = this.ctx.settings.autoProperties.filter((auto) => auto.key.trim() !== '');
+    if (autoProperties.length === 0) {
+      container.createEl('p', {
+        text: 'No automatic properties configured.',
+        cls: 'setting-item-description',
+      });
+      return;
+    }
+    for (const auto of autoProperties) {
+      new Setting(container).setName(auto.key).addToggle((toggle) =>
+        toggle.setValue(!(this.draft.disabledAutoProperties ?? []).includes(auto.key)).onChange((enabled) => {
+          const disabled = (this.draft.disabledAutoProperties ??= []);
+          if (enabled) {
+            this.draft.disabledAutoProperties = disabled.filter((key) => key !== auto.key);
+          } else if (!disabled.includes(auto.key)) {
+            disabled.push(auto.key);
+          }
+        }),
+      );
+    }
   }
 
   /** Render the editor row(s) for one property definition. */
@@ -534,6 +569,12 @@ export class SchemaEditModal extends Modal {
         usedIds.add(action.id);
       }
       if (this.draft.actions.length === 0) delete this.draft.actions;
+    }
+    // Drop disabled keys that no longer exist globally; omit the field if empty.
+    if (this.draft.disabledAutoProperties) {
+      const globalKeys = new Set(this.ctx.settings.autoProperties.map((auto) => auto.key));
+      this.draft.disabledAutoProperties = this.draft.disabledAutoProperties.filter((key) => globalKeys.has(key));
+      if (this.draft.disabledAutoProperties.length === 0) delete this.draft.disabledAutoProperties;
     }
     if (this.isNew && !this.draft.id) {
       this.draft.id = slugifyId(this.draft.label, (id) => this.ctx.schemas.byId(id) !== undefined);

@@ -25,7 +25,8 @@ export function dateFormatter(): (format: string) => string {
 /**
  * Build the full Markdown note content for an object. `type` always leads the
  * frontmatter, followed by the configured auto-properties (default
- * `created_on`) and then the schema's properties in order. Pass `formatDate` to
+ * `created_on`) and then the schema's properties in order. Auto-properties the
+ * schema disables via `disabledAutoProperties` are skipped. Pass `formatDate` to
  * resolve `{{date:FORMAT}}`/`{{time:FORMAT}}` tokens in templates and
  * auto-property values.
  */
@@ -43,8 +44,9 @@ export function buildNoteContent(
   // Auto-properties go after `type`; skip `type` and any key a schema property
   // already owns so the note never has duplicate frontmatter keys.
   const schemaKeys = new Set(schema.properties.map((prop) => prop.key));
+  const disabled = new Set(schema.disabledAutoProperties ?? []);
   for (const auto of autoProperties) {
-    if (!auto.key || auto.key === 'type' || schemaKeys.has(auto.key)) continue;
+    if (!auto.key || auto.key === 'type' || schemaKeys.has(auto.key) || disabled.has(auto.key)) continue;
     entries.push({ key: auto.key, type: auto.type, value: renderTemplate(auto.value, vars) });
   }
   for (const prop of schema.properties) {
