@@ -42,8 +42,8 @@ export function buildNoteContent(
   const entries: FrontmatterEntry[] = [{ key: 'type', type: 'text', value: schema.id }];
   // Auto-properties go after `type`; skip `type` and any key a schema property
   // already owns so the note never has duplicate frontmatter keys.
-  const disabledAutoKeys = new Set(schema.disabledAutoProperties ?? []);
-  const schemaKeys = new Set(schema.properties.map((prop) => prop.key));
+  const disabledAutoKeys = new Set((schema.disabledAutoProperties ?? []).map((key) => key.trim()).filter(Boolean));
+  const schemaKeys = new Set(schema.properties.map((prop) => prop.key.trim()).filter(Boolean));
   for (const auto of autoProperties) {
     const key = auto.key.trim();
     if (!key || key === 'type' || schemaKeys.has(key) || disabledAutoKeys.has(key)) continue;
