@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/andrewmcodes/obsidian-objects/compare/1.2.0...1.3.0) (2026-07-11)
+
+
+### Features
+
+* **schema:** allow disabling automatic properties per schema ([#28](https://github.com/andrewmcodes/obsidian-objects/issues/28)) ([6feddb7](https://github.com/andrewmcodes/obsidian-objects/commit/6feddb78bffb2df6e0efe4d8bc0fc34700390b4b))
+
 ## [1.2.0](https://github.com/andrewmcodes/obsidian-objects/compare/1.1.0...1.2.0) (2026-07-01)
 
 
