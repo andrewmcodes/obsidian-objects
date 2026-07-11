@@ -42,10 +42,12 @@ export function buildNoteContent(
   const entries: FrontmatterEntry[] = [{ key: 'type', type: 'text', value: schema.id }];
   // Auto-properties go after `type`; skip `type` and any key a schema property
   // already owns so the note never has duplicate frontmatter keys.
+  const disabledAutoKeys = new Set(schema.disabledAutoProperties ?? []);
   const schemaKeys = new Set(schema.properties.map((prop) => prop.key));
   for (const auto of autoProperties) {
-    if (!auto.key || auto.key === 'type' || schemaKeys.has(auto.key)) continue;
-    entries.push({ key: auto.key, type: auto.type, value: renderTemplate(auto.value, vars) });
+    const key = auto.key.trim();
+    if (!key || key === 'type' || schemaKeys.has(key) || disabledAutoKeys.has(key)) continue;
+    entries.push({ key, type: auto.type, value: renderTemplate(auto.value, vars) });
   }
   for (const prop of schema.properties) {
     entries.push({ key: prop.key, type: prop.type, value: values[prop.key] });

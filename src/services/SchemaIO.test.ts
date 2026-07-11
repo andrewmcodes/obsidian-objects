@@ -123,4 +123,22 @@ describe('exportSchemas / parseSchemas', () => {
     );
     expect(schemas[0]?.properties[0]?.type).toBe('text');
   });
+
+  it('round-trips disabled automatic properties on import', () => {
+    const { schemas, errors } = parseSchemas(
+      JSON.stringify({
+        version: 1,
+        schemas: [
+          {
+            id: 'project',
+            label: 'Project',
+            properties: [],
+            disabledAutoProperties: ['created_on', 123, ''],
+          },
+        ],
+      }),
+    );
+    expect(errors).toEqual([]);
+    expect(schemas[0]?.disabledAutoProperties).toEqual(['created_on', '123']);
+  });
 });

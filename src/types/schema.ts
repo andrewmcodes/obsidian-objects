@@ -102,6 +102,8 @@ export interface Schema {
   filenameTemplate: string;
   /** Ordered property definitions. */
   properties: PropertyDefinition[];
+  /** Global automatic properties to skip for this schema (by key). */
+  disabledAutoProperties?: string[];
   /** Default Markdown body template; supports {{title}}, {{date}}, {{type}}. */
   bodyTemplate: string;
   /** Optional additional named templates the user can pick when creating. */

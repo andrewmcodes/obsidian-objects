@@ -71,4 +71,21 @@ describe('buildNoteContent', () => {
     expect(content).toContain('status: active');
     expect(content).not.toContain('status: auto');
   });
+
+  it('omits only schema-disabled global auto-properties', () => {
+    const content = buildNoteContent(
+      { ...projectSchema, disabledAutoProperties: ['created_on'] },
+      'Vite Migration',
+      {},
+      '2026-06-17',
+      undefined,
+      undefined,
+      [
+        { key: 'created_on', type: 'date', value: '{{date}}' },
+        { key: 'author', type: 'text', value: 'Andrew' },
+      ],
+    );
+    expect(content).not.toContain('created_on');
+    expect(content).toContain('author: Andrew');
+  });
 });

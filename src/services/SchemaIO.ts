@@ -128,6 +128,9 @@ function coerceSchema(raw: unknown): Schema | null {
     filenameTemplate: typeof r.filenameTemplate === 'string' ? r.filenameTemplate : '{{title}}',
     properties,
     bodyTemplate: typeof r.bodyTemplate === 'string' ? r.bodyTemplate : '# {{title}}\n',
+    disabledAutoProperties: Array.isArray(r.disabledAutoProperties)
+      ? r.disabledAutoProperties.map(asString).filter((key) => key !== '')
+      : undefined,
     templates: Array.isArray(r.templates)
       ? r.templates
           .filter((t): t is Record<string, unknown> => typeof t === 'object' && t !== null)

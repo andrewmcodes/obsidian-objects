@@ -32,6 +32,7 @@ function cloneSchema(schema: Schema): Schema {
         : undefined,
     })),
     actions: schema.actions?.map((action) => ({ ...action })),
+    disabledAutoProperties: schema.disabledAutoProperties ? [...schema.disabledAutoProperties] : undefined,
   };
 }
 
@@ -133,6 +134,35 @@ export class SchemaEditModal extends Modal {
         this.render();
       }),
     );
+
+    contentEl.createEl('h3', { text: 'Automatic properties' });
+    contentEl.createEl('p', {
+      text: 'Turn off global automatic properties for this schema.',
+      cls: 'setting-item-description',
+    });
+    const globalAutoKeys = this.ctx.settings.autoProperties
+      .map((property) => property.key.trim())
+      .filter((key) => key !== '');
+    const disabledAutoKeys = new Set(this.draft.disabledAutoProperties ?? []);
+    if (globalAutoKeys.length === 0) {
+      contentEl.createEl('p', {
+        text: 'No global automatic properties are currently configured.',
+        cls: 'setting-item-description',
+      });
+    } else {
+      for (const key of globalAutoKeys) {
+        new Setting(contentEl)
+          .setName(key)
+          .setDesc('Turn off this global automatic property for this schema.')
+          .addToggle((toggle) =>
+            toggle.setValue(disabledAutoKeys.has(key)).onChange((value) => {
+              if (value) disabledAutoKeys.add(key);
+              else disabledAutoKeys.delete(key);
+              this.draft.disabledAutoProperties = [...disabledAutoKeys];
+            }),
+          );
+      }
+    }
 
     contentEl.createEl('h3', { text: 'Additional templates' });
     contentEl.createEl('p', {
@@ -534,6 +564,19 @@ export class SchemaEditModal extends Modal {
         usedIds.add(action.id);
       }
       if (this.draft.actions.length === 0) delete this.draft.actions;
+    }
+    if (this.draft.disabledAutoProperties) {
+      const globalAutoKeys = new Set(
+        this.ctx.settings.autoProperties.map((property) => property.key.trim()).filter((key) => key !== ''),
+      );
+      this.draft.disabledAutoProperties = Array.from(
+        new Set(
+          this.draft.disabledAutoProperties
+            .map((key) => key.trim())
+            .filter((key) => key !== '' && globalAutoKeys.has(key)),
+        ),
+      );
+      if (this.draft.disabledAutoProperties.length === 0) delete this.draft.disabledAutoProperties;
     }
     if (this.isNew && !this.draft.id) {
       this.draft.id = slugifyId(this.draft.label, (id) => this.ctx.schemas.byId(id) !== undefined);
