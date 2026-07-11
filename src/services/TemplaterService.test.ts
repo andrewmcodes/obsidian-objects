@@ -8,7 +8,6 @@ function appWith(templater: unknown): App {
   return { plugins: { plugins } } as unknown as App;
 }
 
-// eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test stub, not a real vault file
 const file = { basename: 'Note' } as unknown as TFile;
 
 describe('isTemplaterEnabled', () => {
