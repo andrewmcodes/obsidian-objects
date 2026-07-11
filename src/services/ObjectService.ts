@@ -42,7 +42,8 @@ export function buildNoteContent(
   const entries: FrontmatterEntry[] = [{ key: 'type', type: 'text', value: schema.id }];
   // Auto-properties go after `type`; skip `type` and any key a schema property
   // already owns so the note never has duplicate frontmatter keys.
-  // Defensive normalization for older/imported data that may contain whitespace.
+  // Defensive normalization for older/imported data that may contain whitespace
+  // in either disabled auto-property keys or schema property keys.
   const disabledAutoKeys = new Set((schema.disabledAutoProperties ?? []).map((key) => key.trim()).filter(Boolean));
   const schemaKeys = new Set(schema.properties.map((prop) => prop.key.trim()).filter(Boolean));
   for (const auto of autoProperties) {

@@ -71,6 +71,11 @@ export class SchemaEditModal extends Modal {
     this.render();
   }
 
+  /** Current global automatic property keys (trimmed, non-empty). */
+  private globalAutoPropertyKeys(): string[] {
+    return this.ctx.settings.autoProperties.map((property) => property.key.trim()).filter((key) => key !== '');
+  }
+
   /** Re-render the whole modal (simplest way to reflect property changes). */
   private render(): void {
     const { contentEl } = this;
@@ -140,9 +145,7 @@ export class SchemaEditModal extends Modal {
       text: 'Turn off global automatic properties for this schema.',
       cls: 'setting-item-description',
     });
-    const globalAutoKeys = this.ctx.settings.autoProperties
-      .map((property) => property.key.trim())
-      .filter((key) => key !== '');
+    const globalAutoKeys = this.globalAutoPropertyKeys();
     const disabledAutoKeys = new Set(this.draft.disabledAutoProperties ?? []);
     if (globalAutoKeys.length === 0) {
       contentEl.createEl('p', {
@@ -566,9 +569,7 @@ export class SchemaEditModal extends Modal {
       if (this.draft.actions.length === 0) delete this.draft.actions;
     }
     if (this.draft.disabledAutoProperties) {
-      const globalAutoKeys = new Set(
-        this.ctx.settings.autoProperties.map((property) => property.key.trim()).filter((key) => key !== ''),
-      );
+      const globalAutoKeys = new Set(this.globalAutoPropertyKeys());
       this.draft.disabledAutoProperties = Array.from(
         new Set(
           this.draft.disabledAutoProperties
