@@ -152,12 +152,12 @@ export class SchemaEditModal extends Modal {
     } else {
       for (const key of globalAutoKeys) {
         new Setting(contentEl)
-          .setName(`Disable ${key}`)
-          .setDesc('When checked, this automatic property will not be added to new objects of this schema.')
+          .setName(key)
+          .setDesc('When enabled, this automatic property will be added to new objects of this schema.')
           .addToggle((toggle) =>
-            toggle.setValue(disabledAutoKeys.has(key)).onChange((value) => {
-              if (value) disabledAutoKeys.add(key);
-              else disabledAutoKeys.delete(key);
+            toggle.setValue(!disabledAutoKeys.has(key)).onChange((value) => {
+              if (value) disabledAutoKeys.delete(key);
+              else disabledAutoKeys.add(key);
               this.draft.disabledAutoProperties = [...disabledAutoKeys];
             }),
           );
