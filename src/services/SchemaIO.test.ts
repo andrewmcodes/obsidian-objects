@@ -123,4 +123,16 @@ describe('exportSchemas / parseSchemas', () => {
     );
     expect(schemas[0]?.properties[0]?.type).toBe('text');
   });
+
+  it('preserves disabled automatic properties on import, coercing entries', () => {
+    const { schemas, errors } = parseSchemas(
+      JSON.stringify({
+        version: 1,
+        schemas: [{ id: 'project', label: 'Project', properties: [], disabledAutoProperties: ['created_on', 123, ''] }],
+      }),
+    );
+    expect(errors).toEqual([]);
+    // Non-string entries coerce to strings; empty keys are dropped.
+    expect(schemas[0]?.disabledAutoProperties).toEqual(['created_on', '123']);
+  });
 });

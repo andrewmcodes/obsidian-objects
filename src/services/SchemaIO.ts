@@ -135,6 +135,9 @@ function coerceSchema(raw: unknown): Schema | null {
       : undefined,
     variants: variants && variants.length ? variants : undefined,
     actions: actions && actions.length ? actions : undefined,
+    disabledAutoProperties: Array.isArray(r.disabledAutoProperties)
+      ? r.disabledAutoProperties.map(asString).filter((key) => key !== '')
+      : undefined,
   };
 }
 
