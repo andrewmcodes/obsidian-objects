@@ -124,15 +124,32 @@ describe('exportSchemas / parseSchemas', () => {
     expect(schemas[0]?.properties[0]?.type).toBe('text');
   });
 
-  it('preserves disabled automatic properties on import, coercing entries', () => {
+  it('preserves disabled automatic properties on import, coercing and trimming entries', () => {
     const { schemas, errors } = parseSchemas(
       JSON.stringify({
         version: 1,
-        schemas: [{ id: 'project', label: 'Project', properties: [], disabledAutoProperties: ['created_on', 123, ''] }],
+        schemas: [
+          {
+            id: 'project',
+            label: 'Project',
+            properties: [],
+            disabledAutoProperties: ['created_on', ' spaced ', 123, ''],
+          },
+        ],
       }),
     );
     expect(errors).toEqual([]);
-    // Non-string entries coerce to strings; empty keys are dropped.
-    expect(schemas[0]?.disabledAutoProperties).toEqual(['created_on', '123']);
+    // Non-string entries coerce to strings, keys are trimmed, empty keys dropped.
+    expect(schemas[0]?.disabledAutoProperties).toEqual(['created_on', 'spaced', '123']);
+  });
+
+  it('omits an all-empty disabledAutoProperties array on import', () => {
+    const { schemas } = parseSchemas(
+      JSON.stringify({
+        version: 1,
+        schemas: [{ id: 'x', label: 'X', properties: [], disabledAutoProperties: ['', '  '] }],
+      }),
+    );
+    expect(schemas[0]?.disabledAutoProperties).toBeUndefined();
   });
 });

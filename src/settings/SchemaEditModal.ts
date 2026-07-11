@@ -219,26 +219,29 @@ export class SchemaEditModal extends Modal {
    */
   private renderAutoProperties(container: HTMLElement): void {
     container.createEl('h3', { text: 'Automatic properties' });
-    container.createEl('p', {
-      text: 'Global properties added to every new note. Turn one off to skip it for this type.',
-      cls: 'setting-item-description',
-    });
-    const autoProperties = this.ctx.settings.autoProperties.filter((auto) => auto.key.trim() !== '');
-    if (autoProperties.length === 0) {
+    // Unique, non-empty global keys; duplicates collapse to a single toggle.
+    const keys = [
+      ...new Set(this.ctx.settings.autoProperties.map((auto) => auto.key).filter((key) => key.trim() !== '')),
+    ];
+    if (keys.length === 0) {
       container.createEl('p', {
         text: 'No automatic properties configured.',
         cls: 'setting-item-description',
       });
       return;
     }
-    for (const auto of autoProperties) {
-      new Setting(container).setName(auto.key).addToggle((toggle) =>
-        toggle.setValue(!(this.draft.disabledAutoProperties ?? []).includes(auto.key)).onChange((enabled) => {
+    container.createEl('p', {
+      text: 'Global properties added to every new note. Turn one off to skip it for this type.',
+      cls: 'setting-item-description',
+    });
+    for (const key of keys) {
+      new Setting(container).setName(key).addToggle((toggle) =>
+        toggle.setValue(!(this.draft.disabledAutoProperties ?? []).includes(key)).onChange((enabled) => {
           const disabled = (this.draft.disabledAutoProperties ??= []);
           if (enabled) {
-            this.draft.disabledAutoProperties = disabled.filter((key) => key !== auto.key);
-          } else if (!disabled.includes(auto.key)) {
-            disabled.push(auto.key);
+            this.draft.disabledAutoProperties = disabled.filter((k) => k !== key);
+          } else if (!disabled.includes(key)) {
+            disabled.push(key);
           }
         }),
       );
