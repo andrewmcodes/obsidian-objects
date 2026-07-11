@@ -121,6 +121,10 @@ function coerceSchema(raw: unknown): Schema | null {
     ? r.variants.map(coerceVariant).filter((v): v is SchemaVariant => v !== null)
     : undefined;
 
+  const disabledAutoProperties = Array.isArray(r.disabledAutoProperties)
+    ? r.disabledAutoProperties.map((value) => asString(value).trim()).filter((key) => key !== '')
+    : undefined;
+
   return {
     id: r.id,
     label: r.label,
@@ -135,6 +139,8 @@ function coerceSchema(raw: unknown): Schema | null {
       : undefined,
     variants: variants && variants.length ? variants : undefined,
     actions: actions && actions.length ? actions : undefined,
+    disabledAutoProperties:
+      disabledAutoProperties && disabledAutoProperties.length ? disabledAutoProperties : undefined,
   };
 }
 

@@ -85,6 +85,7 @@ The **Objects** settings tab lets you:
 - Edit the automatic properties added to every new note (seeded with `created_on: {{date}}`) — change them, add your own, or remove them.
 - Add, edit, delete, and reorder schemas.
 - Edit each schema's id, label, folder, filename template, body template, and properties (including options for `select`/`multiselect`).
+- Toggle individual automatic properties off per schema, so notes of that type are created without them.
 
 ## Data model
 
