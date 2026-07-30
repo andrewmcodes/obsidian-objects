@@ -54,7 +54,7 @@ jobs:
           [ -f styles.css ] && echo "exists=true" >> "$GITHUB_OUTPUT" || echo "exists=false" >> "$GITHUB_OUTPUT"
 
       - name: Attest build provenance
-        uses: actions/attest@v4
+        uses: actions/attest@v4.2.0
         with:
           subject-path: |
             main.js
